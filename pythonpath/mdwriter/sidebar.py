@@ -192,73 +192,81 @@ class SidebarPanel(unohelper.Base, XServiceInfo, XToolPanel, XSidebarPanel):
         def my(px):
             return int(round(px / sy))
 
-        model = smgr.createInstanceWithContext(
-            "com.sun.star.awt.UnoControlDialogModel", self.ctx)
-        model.setPropertyValue("Width", mx(width_px))
-        model.setPropertyValue("Height", my(height_px))
+        toolkit = smgr.createInstanceWithContext("com.sun.star.awt.Toolkit", self.ctx)
 
-        edit = model.createInstance("com.sun.star.awt.UnoControlEditModel")
-        edit.setPropertyValue("Name", "source")
-        edit.setPropertyValue("PositionX", mx(margin))
-        edit.setPropertyValue("PositionY", my(margin))
-        edit.setPropertyValue("Width", mx(width_px - 2 * margin))
-        edit.setPropertyValue("Height", my(height_px - 3 * margin - btn_h))
-        edit.setPropertyValue("MultiLine", True)
-        edit.setPropertyValue("VScroll", True)
-        edit.setPropertyValue("HScroll", True)
-        edit.setPropertyValue("Tabstop", True)
-        model.insertByName("source", edit)
+        cmodel = smgr.createInstanceWithContext(
+            "com.sun.star.awt.UnoControlContainerModel", self.ctx)
+        cmodel.setPropertyValue("Width", mx(width_px))
+        cmodel.setPropertyValue("Height", my(height_px))
+
+        # A container (not a dialog) is embedded as a child window; a dialog is
+        # always a top-level window.
+        self.dialog = smgr.createInstanceWithContext(
+            "com.sun.star.awt.UnoControlContainer", self.ctx)
+        self.dialog.setModel(cmodel)
+        parent_peer = parent
+        try:
+            parent_peer = parent.queryInterface(
+                uno.getTypeByName("com.sun.star.awt.XWindowPeer"))
+        except Exception:
+            parent_peer = parent
+        try:
+            self.dialog.createPeer(toolkit, parent_peer)
+        except Exception as exc:
+            _log("panel container createPeer failed: %r" % (exc,))
+        self.dialog.setPosSize(0, 0, width_px, height_px, 15)
 
         btn_w = (width_px - 3 * margin) // 2
         btn_y = height_px - margin - btn_h
 
-        apply_btn = model.createInstance("com.sun.star.awt.UnoControlButtonModel")
-        apply_btn.setPropertyValue("Name", "apply")
-        apply_btn.setPropertyValue("Label", "Apply")
-        apply_btn.setPropertyValue("PositionX", mx(margin))
-        apply_btn.setPropertyValue("PositionY", my(btn_y))
-        apply_btn.setPropertyValue("Width", mx(btn_w))
-        apply_btn.setPropertyValue("Height", my(btn_h))
-        model.insertByName("apply", apply_btn)
+        self.control = self._add_edit(
+            toolkit, "source", margin, margin,
+            width_px - 2 * margin, height_px - 3 * margin - btn_h)
+        self.apply = self._add_button(
+            toolkit, "apply", "Apply", margin, btn_y, btn_w, btn_h)
+        self.reload = self._add_button(
+            toolkit, "reload", "Reload", margin * 2 + btn_w, btn_y, btn_w, btn_h)
 
-        reload_btn = model.createInstance("com.sun.star.awt.UnoControlButtonModel")
-        reload_btn.setPropertyValue("Name", "reload")
-        reload_btn.setPropertyValue("Label", "Reload")
-        reload_btn.setPropertyValue("PositionX", mx(margin * 2 + btn_w))
-        reload_btn.setPropertyValue("PositionY", my(btn_y))
-        reload_btn.setPropertyValue("Width", mx(btn_w))
-        reload_btn.setPropertyValue("Height", my(btn_h))
-        model.insertByName("reload", reload_btn)
-
-        self.dialog = smgr.createInstanceWithContext(
-            "com.sun.star.awt.UnoControlDialog", self.ctx)
-        self.dialog.setModel(model)
-        try:
-            toolkit = smgr.createInstanceWithContext(
-                "com.sun.star.awt.Toolkit", self.ctx)
-            # createPeer expects the *peer* of the parent window, otherwise the
-            # dialog becomes a separate top-level window instead of being
-            # embedded in the sidebar panel.
-            parent_peer = parent
-            try:
-                parent_peer = parent.queryInterface(
-                    uno.getTypeByName("com.sun.star.awt.XWindowPeer"))
-                _log("panel parent XWindowPeer=%r" % (parent_peer,))
-            except Exception as exc:
-                _log("panel parent peer query failed: %r" % (exc,))
-                parent_peer = parent
-            self.dialog.createPeer(toolkit, parent_peer)
-            self.dialog.setPosSize(0, 0, width_px, height_px, 15)
-            self.dialog.setVisible(True)
-        except Exception as exc:
-            _log("panel createPeer failed: %r" % (exc,))
-
-        self.control = self.dialog.getControl("source")
-        self.apply = self.dialog.getControl("apply")
-        self.reload = self.dialog.getControl("reload")
         self.apply.addActionListener(_ActionListener(self._apply))
         self.reload.addActionListener(_ActionListener(self._load_source))
         self._load_source()
+
+    def _add_control(self, toolkit, model, control, name, x, y, w, h):
+        control.setModel(model)
+        try:
+            self.dialog.addControl(name, control)
+        except Exception as exc:
+            _log("addControl %s failed: %r" % (name, exc))
+        try:
+            control.createPeer(toolkit, self.dialog.getPeer())
+        except Exception as exc:
+            _log("createPeer %s failed: %r" % (name, exc))
+        try:
+            control.setPosSize(x, y, w, h, 15)
+        except Exception:
+            pass
+        return control
+
+    def _add_edit(self, toolkit, name, x, y, w, h):
+        smgr = self.ctx.ServiceManager
+        model = smgr.createInstanceWithContext(
+            "com.sun.star.awt.UnoControlEditModel", self.ctx)
+        model.setPropertyValue("MultiLine", True)
+        model.setPropertyValue("VScroll", True)
+        model.setPropertyValue("HScroll", True)
+        model.setPropertyValue("Tabstop", True)
+        control = smgr.createInstanceWithContext(
+            "com.sun.star.awt.UnoControlEdit", self.ctx)
+        return self._add_control(toolkit, model, control, name, x, y, w, h)
+
+    def _add_button(self, toolkit, name, label, x, y, w, h):
+        smgr = self.ctx.ServiceManager
+        model = smgr.createInstanceWithContext(
+            "com.sun.star.awt.UnoControlButtonModel", self.ctx)
+        model.setPropertyValue("Label", label)
+        control = smgr.createInstanceWithContext(
+            "com.sun.star.awt.UnoControlButton", self.ctx)
+        return self._add_control(toolkit, model, control, name, x, y, w, h)
 
     def _model(self):
         try:
