@@ -40,14 +40,20 @@ def main():
     smgr = ctx.ServiceManager
     desktop = smgr.createInstanceWithContext("com.sun.star.frame.Desktop", ctx)
 
-    # -- 1. run a command once to install the watcher ------------------ #
+    # -- 1. turn Live on and run a command to install the watcher -------- #
     doc_a = desktop.loadComponentFromURL("private:factory/swriter", "_blank", 0, ())
     time.sleep(0.5)
-    url = uno.createUnoStruct("com.sun.star.util.URL")
-    url.Protocol = "org.sendyyeah.mdwriter"
-    url.Complete = "org.sendyyeah.mdwriter:bold"
-    dispatch = desktop.getCurrentFrame().queryDispatch(url, "_self", 0)
-    dispatch.dispatch(url, ())
+    frame = desktop.getCurrentFrame()
+
+    def dispatch(command):
+        url = uno.createUnoStruct("com.sun.star.util.URL")
+        url.Protocol = "org.sendyyeah.mdwriter"
+        url.Complete = "org.sendyyeah.mdwriter:" + command
+        frame.queryDispatch(url, "_self", 0).dispatch(url, ())
+
+    dispatch("togglelive")   # Live is off by default -> turn it on
+    time.sleep(0.3)
+    dispatch("bold")         # ensure the global watcher is installed
     time.sleep(0.5)
 
     # -- 2. a brand new document should be picked up automatically ----- #

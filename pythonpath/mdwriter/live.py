@@ -248,7 +248,7 @@ def refresh_indicator(ctx):
 # ---------------------------------------------------------------------- #
 # Per-document listener
 # ---------------------------------------------------------------------- #
-LIVE_ENABLED = True
+LIVE_ENABLED = False
 
 _attached = {}
 _busy = False

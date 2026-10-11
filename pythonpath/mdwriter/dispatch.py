@@ -341,6 +341,7 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
     def _cmd_togglelive(self):
         live.LIVE_ENABLED = not live.LIVE_ENABLED
         if live.LIVE_ENABLED:
+            live.bootstrap(self.ctx)
             model = self._model()
             if formatter.is_writer(model):
                 live.attach(self.ctx, model)

@@ -97,11 +97,10 @@ replaced by real formatting:
 | `` `code` ``        | inline code                      |
 | `[text](url)`       | hyperlink                        |
 
-Live mode is **on by default**. It attaches itself to every Writer document as
-soon as it is loaded *after* the extension has been activated. To make sure it
-is active, open a document, use any Markdown Writer command once (for example
-**Bold**), then open/create documents as usual. **Markdown ▸ Toggle Live
-Markdown** is a check box: ticked means Live is ON.
+Live mode is **off by default**. Tick **Markdown ▸ Toggle Live Markdown** (a
+check box: ticked = Live ON) to enable it for the current and new documents.
+Live attaches itself to every Writer document created or loaded while it is
+enabled.
 
 > **Note on live block conversion.** Converting a line to a *paragraph style*
 > (heading, list, quote, code block) from inside the typing notification
