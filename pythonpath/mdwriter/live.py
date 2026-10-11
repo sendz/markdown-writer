@@ -144,17 +144,46 @@ def _reset_typing_attributes(model):
     """Clear the cursor's character state so following text is unformatted.
 
     Setting a character attribute leaves it active for subsequent typing, so
-    after converting e.g. **bold** the user would keep typing in bold.
+    after converting e.g. **bold** or `code` the user would keep typing in that
+    style.  Each attribute is set independently, and the default character
+    style name is discovered from the document (it may be localised).
     """
     try:
         cursor = model.getCurrentController().getViewCursor()
-        cursor.setPropertyValue("CharWeight", formatter.NORMAL_WEIGHT)
-        cursor.setPropertyValue(
-            "CharPosture", uno.Enum("com.sun.star.awt.FontSlant", "NONE"))
-        cursor.setPropertyValue("CharStrikeout", 0)
-        cursor.setPropertyValue("CharStyleName", formatter.CHAR_STANDARD_STYLE)
     except Exception as exc:
-        _log("reset typing attributes failed: %r" % (exc,))
+        _log("reset typing attributes: no cursor: %r" % (exc,))
+        return
+
+    _set_quietly(cursor, "CharWeight", formatter.NORMAL_WEIGHT)
+    _set_quietly(cursor, "CharPosture",
+                 uno.Enum("com.sun.star.awt.FontSlant", "NONE"))
+    _set_quietly(cursor, "CharStrikeout", 0)
+    for name in _default_char_style_names(model):
+        if _set_quietly(cursor, "CharStyleName", name):
+            _log("reset CharStyleName -> %r" % (name,))
+            break
+
+
+def _set_quietly(cursor, prop, value):
+    try:
+        cursor.setPropertyValue(prop, value)
+        return True
+    except Exception as exc:
+        _log("reset %s=%r failed: %r" % (prop, value, exc))
+        return False
+
+
+def _default_char_style_names(model):
+    names = []
+    try:
+        family = model.getStyleFamilies().getByName("CharacterStyles")
+        entries = list(family.ElementNames)
+        if entries:
+            names.append(entries[0])       # usually the default character style
+    except Exception:
+        pass
+    names.extend([formatter.CHAR_STANDARD_STYLE, "Default Character Style"])
+    return names
 
 
 def _lock_actions(model):
