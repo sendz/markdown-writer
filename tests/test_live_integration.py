@@ -43,14 +43,11 @@ def main():
     # -- 1. run a command once to install the watcher ------------------ #
     doc_a = desktop.loadComponentFromURL("private:factory/swriter", "_blank", 0, ())
     time.sleep(0.5)
-    frame = desktop.getCurrentFrame()
-    dispatch_provider = smgr.createInstanceWithContext(
-        "com.sendyyeah.mdwriter.Dispatch", ctx)
-    dispatch_provider.initialize((frame,))
     url = uno.createUnoStruct("com.sun.star.util.URL")
     url.Protocol = "service:"
     url.Complete = "service:com.sendyyeah.mdwriter.Dispatch?command=bold"
-    dispatch_provider.queryDispatch(url, "_self", 0).dispatch(url, ())
+    dispatch = desktop.getCurrentFrame().queryDispatch(url, "_self", 0)
+    dispatch.dispatch(url, ())
     time.sleep(0.5)
 
     # -- 2. a brand new document should be picked up automatically ----- #

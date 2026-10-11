@@ -1,12 +1,18 @@
-"""Protocol handler that receives commands from the Markdown Writer UI.
+"""Command entry point for the Markdown Writer UI.
 
-The extension's menu items use URLs of the form::
+The extension's menu and toolbar items use URLs of the form::
 
     service:com.sendyyeah.mdwriter.Dispatch?command=<command>
 
-LibreOffice instantiates this class (service ``com.sun.star.frame.ProtocolHandler``)
-for the frame that owns the menu, then calls ``queryDispatch`` with the URL above.
-We parse ``command`` from the URL and return an ``XDispatch`` that actually runs it.
+For such URLs LibreOffice's ``com.sun.star.comp.framework.ServiceHandler``
+creates the service named in the URL and, if the object supports
+``com.sun.star.task.XJobExecutor``, calls ``trigger()`` with the text after the
+``?`` (for example ``command=bold``).  That is the path the add-on UI uses, so
+``XJobExecutor`` is what actually runs our commands.
+
+``XDispatchProvider``/``XDispatch`` and ``XInitialization`` are also
+implemented so the component works when used directly as a protocol handler
+(e.g. from scripts or tests).
 """
 
 import unohelper
@@ -14,6 +20,7 @@ import unohelper
 from com.sun.star.frame import XDispatchProvider, XDispatch, XFrame
 from com.sun.star.lang import XInitialization, XServiceInfo
 from com.sun.star.awt import MessageBoxButtons
+from com.sun.star.task import XJobExecutor
 
 from mdwriter import formatter
 from mdwriter import live
@@ -27,12 +34,15 @@ URL_PREFIX = "service:com.sendyyeah.mdwriter.Dispatch"
 
 
 def _parse_command(url):
-    """Extract the ``command`` query parameter from a parsed UNO URL."""
-    complete = url.Complete
-    if "?" not in complete:
-        return ""
-    query = complete.split("?", 1)[1]
-    for part in query.split("&"):
+    """Extract the ``command`` parameter from a parsed UNO URL."""
+    return _command_from_string(url.Complete)
+
+
+def _command_from_string(text):
+    """Extract ``command=`` from a URL or from a bare argument string."""
+    if "?" in text:
+        text = text.split("?", 1)[1]
+    for part in text.split("&"):
         key, _, value = part.partition("=")
         if key == "command":
             return value
@@ -40,7 +50,7 @@ def _parse_command(url):
 
 
 class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
-               XDispatchProvider, XDispatch):
+               XDispatchProvider, XDispatch, XJobExecutor):
 
     def __init__(self, ctx, *args):
         self.ctx = ctx
@@ -60,10 +70,9 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
         return SERVICE_NAMES
 
     # ------------------------------------------------------------------ #
-    # XInitialization
+    # XInitialization (protocol handler path)
     # ------------------------------------------------------------------ #
     def initialize(self, args):
-        """Called by the frame with the frame itself as the only argument."""
         # Do not isinstance-check against XFrame: pyuno's interface isinstance
         # is unreliable for UNO objects. The ProtocolHandler contract says the
         # first argument is the frame.
@@ -91,20 +100,39 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
     # XDispatch
     # ------------------------------------------------------------------ #
     def dispatch(self, url, args):
-        if not self.command:
-            self.command = _parse_command(url)
-        live.bootstrap(self.ctx)
-        handler = getattr(self, "_cmd_" + self.command, None)
-        if handler is None:
-            self._error("Unknown command: %r" % self.command)
-            return
-        handler()
+        self._execute(self.command or _parse_command(url))
 
     def addStatusListener(self, listener, url):
-        pass
+        try:
+            event = uno.createUnoStruct("com.sun.star.frame.FeatureStateEvent")
+            event.Source = self
+            event.FeatureURL = url
+            event.FeatureDescriptor = ""
+            event.IsEnabled = True
+            event.Requery = False
+            listener.statusChanged(event)
+        except Exception:
+            pass
 
     def removeStatusListener(self, listener, url):
         pass
+
+    # ------------------------------------------------------------------ #
+    # XJobExecutor  (this is the path used by the add-on menu/toolbar)
+    # ------------------------------------------------------------------ #
+    def trigger(self, event):
+        self._execute(_command_from_string(event))
+
+    # ------------------------------------------------------------------ #
+    # Command dispatch
+    # ------------------------------------------------------------------ #
+    def _execute(self, command):
+        preview._log("execute command=%r" % (command,))
+        handler = getattr(self, "_cmd_" + command, None)
+        if handler is None:
+            self._error("Unknown command: %r" % command)
+            return
+        handler()
 
     # ------------------------------------------------------------------ #
     # Helpers
@@ -113,8 +141,9 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
         toolkit = self.ctx.ServiceManager.createInstanceWithContext(
             "com.sun.star.awt.Toolkit", self.ctx)
         parent = None
-        if self.frame is not None:
-            parent = self.frame.getContainerWindow()
+        frame = self._frame()
+        if frame is not None:
+            parent = frame.getContainerWindow()
         box = toolkit.createMessageBox(
             parent, "infobox", MessageBoxButtons.BUTTONS_OK, title, message)
         box.execute()
@@ -143,9 +172,6 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
         except Exception:
             return None
 
-    # ------------------------------------------------------------------ #
-    # Commands
-    # ------------------------------------------------------------------ #
     def _run(self, func):
         """Run *func(ctx, model)* after checking we are in a Writer document."""
         model = self._model()
@@ -162,6 +188,9 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
     def _run_heading(self, level):
         self._run(lambda ctx, model: formatter.set_heading(ctx, model, level))
 
+    # ------------------------------------------------------------------ #
+    # Commands
+    # ------------------------------------------------------------------ #
     def _cmd_about(self):
         import mdwriter
         self._show_info(
@@ -265,9 +294,7 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
             self._error("Could not render preview: %s" % exc)
 
     def _cmd_source(self):
-        preview._log("_cmd_source: frame=%r" % (self.frame,))
         model = self._model()
-        preview._log("_cmd_source: model=%r writer=%s" % (model, formatter.is_writer(model)))
         if not formatter.is_writer(model):
             self._error("This command only works in a Writer document.")
             return
@@ -280,7 +307,6 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
     def _cmd_togglelive(self):
         live.LIVE_ENABLED = not live.LIVE_ENABLED
         if live.LIVE_ENABLED:
-            # (Re)attach to the active document.
             model = self._model()
             if formatter.is_writer(model):
                 live.attach(self.ctx, model)

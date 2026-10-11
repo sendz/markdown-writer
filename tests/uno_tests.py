@@ -179,8 +179,8 @@ def test_export_import(ctx):
 
 
 def test_dispatch_command(ctx):
-    """Commands must work through the Dispatch component (frame propagation)."""
-    print("== dispatch command (frame propagation) ==")
+    """Commands must work through the add-on UI path (frame -> ServiceHandler)."""
+    print("== dispatch command (add-on UI path) ==")
     desktop = ctx.ServiceManager.createInstanceWithContext(
         "com.sun.star.frame.Desktop", ctx)
     doc = desktop.loadComponentFromURL("private:factory/swriter", "_blank", 0, ())
@@ -192,18 +192,21 @@ def test_dispatch_command(ctx):
     vc.gotoStart(False)
     vc.goRight(5, True)
 
-    provider = ctx.ServiceManager.createInstanceWithContext(
-        "com.sendyyeah.mdwriter.Dispatch", ctx)
-    provider.initialize((desktop.getCurrentFrame(),))
     url = uno.createUnoStruct("com.sun.star.util.URL")
     url.Protocol = "service:"
     url.Complete = "service:com.sendyyeah.mdwriter.Dispatch?command=bold"
-    provider.queryDispatch(url, "_self", 0).dispatch(url, ())
+
+    # This is exactly what the menu/toolbar does: ask the frame, which routes
+    # "service:" URLs through com.sun.star.comp.framework.ServiceHandler, which
+    # creates the component and calls XJobExecutor.trigger().
+    dispatch = desktop.getCurrentFrame().queryDispatch(url, "_self", 0)
+    check("frame resolves the command", dispatch is not None)
+    dispatch.dispatch(url, ())
 
     check_cursor = text.createTextCursor()
     check_cursor.gotoStart(False)
     check_cursor.goRight(5, False)
-    check("bold applied through dispatch",
+    check("bold applied through the add-on UI path",
           float(check_cursor.getPropertyValue("CharWeight")) >= 149)
     doc.close(False)
 
