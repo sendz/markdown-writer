@@ -277,12 +277,13 @@
     </node>
 
     <!-- ============================ Toolbar ============================ -->
+    <!--
+      An add-on toolbar is a set of toolbar items, so the items are direct
+      children of the toolbar node (no Title property, no Submenu wrapper).
+      The node name is what shows up in View > Toolbars.
+    -->
     <node oor:name="OfficeToolBar">
-      <node oor:name="com.sendyyeah.mdwriter.ToolBar" oor:op="replace">
-        <prop oor:name="Title" oor:type="xs:string">
-          <value xml:lang="en-US">Markdown</value>
-        </prop>
-        <node oor:name="Submenu">
+      <node oor:name="Markdown" oor:op="replace">
 
           <node oor:name="t_bold" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
@@ -356,7 +357,6 @@
             </prop>
           </node>
 
-        </node>
       </node>
     </node>
 
