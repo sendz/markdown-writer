@@ -203,6 +203,15 @@
             </prop>
           </node>
 
+          <node oor:name="m_live" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=togglelive</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Toggle Live Markdown</value>
+            </prop>
+          </node>
+
           <node oor:name="m_about" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
               <value>service:com.sendyyeah.mdwriter.Dispatch?command=about</value>

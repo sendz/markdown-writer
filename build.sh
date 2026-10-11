@@ -15,9 +15,30 @@ PACKAGE_ITEMS=(
     description
     description.xml
     Addons.xcu
+    MarkdownWriter.xcu
     mdwriter.py
     pythonpath
 )
+
+# Every full-path declared in the manifest must exist, otherwise the extension
+# installs but silently ignores missing files.
+python3 - <<'PY'
+import os
+import re
+
+manifest = open("META-INF/manifest.xml", encoding="utf-8").read()
+paths = re.findall(r'manifest:full-path="([^"]+)"', manifest)
+missing = [p for p in paths
+           if p not in ("/",) and not os.path.exists(p)]
+if missing:
+    raise SystemExit("manifest references missing files: %s" % ", ".join(missing))
+print("manifest paths OK (%d entries)" % len(paths))
+PY
+
+# Also make sure every package item exists.
+for item in "${PACKAGE_ITEMS[@]}"; do
+    [ -e "$item" ] || { echo "missing package item: $item"; exit 1; }
+done
 
 rm -f "$OUT"
 rm -rf "$ROOT/build"

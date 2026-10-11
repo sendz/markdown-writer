@@ -11,6 +11,8 @@
 
   <manifest:file-entry manifest:full-path="Addons.xcu"
                        manifest:media-type="application/vnd.sun.star.configuration-data"/>
+  <manifest:file-entry manifest:full-path="MarkdownWriter.xcu"
+                       manifest:media-type="application/vnd.sun.star.configuration-data"/>
 
   <!-- Python UNO component: the loader reads g_ImplementationHelper from this file. -->
   <manifest:file-entry manifest:full-path="mdwriter.py"
@@ -22,6 +24,10 @@
   <manifest:file-entry manifest:full-path="pythonpath/mdwriter/dispatch.py"
                        manifest:media-type="text/x-python"/>
   <manifest:file-entry manifest:full-path="pythonpath/mdwriter/formatter.py"
+                       manifest:media-type="text/x-python"/>
+  <manifest:file-entry manifest:full-path="pythonpath/mdwriter/live.py"
+                       manifest:media-type="text/x-python"/>
+  <manifest:file-entry manifest:full-path="pythonpath/mdwriter/markdown.py"
                        manifest:media-type="text/x-python"/>
 
 </manifest:manifest>

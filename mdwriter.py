@@ -14,11 +14,21 @@ from the ``mdwriter`` package.
 import unohelper
 
 from mdwriter.dispatch import Dispatch
+from mdwriter.live import Job
 
 g_ImplementationHelper = unohelper.ImplementationHelper()
 
+# Menu and toolbar commands.
 g_ImplementationHelper.addImplementation(
     Dispatch,
     "com.sendyyeah.mdwriter.Dispatch",
     ("com.sun.star.frame.ProtocolHandler",),
+)
+
+# Best-effort automatic hook: installs the live formatter when a document is
+# opened, if the office runs job components in the current environment.
+g_ImplementationHelper.addImplementation(
+    Job,
+    "com.sendyyeah.mdwriter.Job",
+    ("com.sun.star.task.Job",),
 )

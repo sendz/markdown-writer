@@ -16,6 +16,7 @@ from com.sun.star.lang import XInitialization, XServiceInfo
 from com.sun.star.awt import MessageBoxButtons
 
 from mdwriter import formatter
+from mdwriter import live
 
 IMPLE_NAME = "com.sendyyeah.mdwriter.Dispatch"
 SERVICE_NAMES = ("com.sun.star.frame.ProtocolHandler",)
@@ -87,6 +88,7 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
     def dispatch(self, url, args):
         if not self.command:
             self.command = _parse_command(url)
+        live.bootstrap(self.ctx)
         handler = getattr(self, "_cmd_" + self.command, None)
         if handler is None:
             self._error("Unknown command: %r" % self.command)
@@ -133,6 +135,8 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
         if not formatter.is_writer(model):
             self._error("This command only works in a Writer document.")
             return
+        live.bootstrap(self.ctx)
+        live.attach(self.ctx, model)
         try:
             func(self.ctx, model)
         except Exception as exc:  # keep the UI informative, never crash
@@ -202,3 +206,16 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
 
     def _cmd_table(self):
         self._run(formatter.insert_table)
+
+    def _cmd_togglelive(self):
+        live.LIVE_ENABLED = not live.LIVE_ENABLED
+        if live.LIVE_ENABLED:
+            # (Re)attach to the active document.
+            model = self._model()
+            if formatter.is_writer(model):
+                live.attach(self.ctx, model)
+        state = "ON" if live.LIVE_ENABLED else "OFF"
+        self._show_info(
+            "Markdown Writer",
+            "Live Markdown auto-formatting is now %s." % state,
+        )
