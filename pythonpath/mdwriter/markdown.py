@@ -26,6 +26,50 @@ INLINE_MARKERS = (
 LINK_RE = re.compile(r"\[([^\]]*)\]\(([^)]*)\)")
 
 
+def trailing_inline(text):
+    """Find a complete inline pattern at the *end* of *text*.
+
+    Returns ``(kind, start, inner, payload, prefix_len, suffix_len)`` where
+    *inner* is the text inside the markers, ``start`` is the index of the
+    opening marker, and prefix/suffix_len are how many marker characters to
+    remove on each side.  Returns ``None`` if the text does not end with a
+    complete pattern.
+
+    Live formatting uses this instead of parsing the whole paragraph, so it
+    only edits the marker characters and never disturbs the formatting of the
+    rest of the line.
+    """
+    link = LINK_RE.search(text)
+    if link is not None and link.end() == len(text):
+        inner = link.group(1)
+        return ("link", link.start(), inner, link.group(2), 1,
+                len(text) - link.start() - 1 - len(inner))
+
+    for opener, closer, kind in (("**", "**", "bold"), ("__", "__", "bold"),
+                                 ("~~", "~~", "strike")):
+        if text.endswith(closer) and len(text) > 2 * len(opener):
+            open_at = text.rfind(opener, 0, len(text) - len(closer))
+            if open_at != -1:
+                inner = text[open_at + len(opener):len(text) - len(closer)]
+                if inner and opener not in inner:
+                    return (kind, open_at, inner, None, len(opener), len(closer))
+
+    for opener, closer, kind in (("`", "`", "code"), ("*", "*", "italic"),
+                                 ("_", "_", "italic")):
+        if not text.endswith(closer) or len(text) <= 2:
+            continue
+        idx = text.rfind(opener, 0, len(text) - len(closer))
+        while idx != -1:
+            lone = (idx == 0 or text[idx - 1] != opener) and \
+                   (idx + 1 >= len(text) or text[idx + 1] != opener)
+            inner = text[idx + 1:len(text) - len(closer)]
+            if lone and inner and opener not in inner:
+                return (kind, idx, inner, None, 1, len(closer))
+            idx = text.rfind(opener, 0, idx)
+
+    return None
+
+
 def split_inline(text):
     """Split *text* into ``(plain_text, spans)``.
 

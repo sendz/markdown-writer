@@ -105,8 +105,9 @@ def main():
     check("quote style applied", para_style(2) == "Quotations")
 
     new_paragraph()
-    type_text("Some **bold** text")
-    check("bold markers consumed", "**" not in para_text(3))
+    type_text("Some **bold**")
+    type_text(" text")
+    check("bold markers consumed", para_text(3) == "Some bold text")
     c = para_cursor(3)
     c.gotoStartOfParagraph(False)
     c.goRight(5, False)   # "Some "
@@ -114,8 +115,9 @@ def main():
     check("bold applied", float(c.getPropertyValue("CharWeight")) >= 149)
 
     new_paragraph()
-    type_text("use `code` here")
-    check("code markers consumed", "`" not in para_text(4))
+    type_text("use `code`")
+    type_text(" here")
+    check("code markers consumed", para_text(4) == "use code here")
     c = para_cursor(4)
     c.gotoStartOfParagraph(False)
     c.goRight(4, False)   # "use "

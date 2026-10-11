@@ -1,6 +1,6 @@
 import sys
 sys.path.insert(0, "/home/sendy/Projects/markdown-writer/pythonpath")
-from mdwriter.markdown import split_inline
+from mdwriter.markdown import split_inline, trailing_inline
 
 cases = [
     ("**bold**", "bold", [(0, 4, "bold", None)]),
@@ -29,6 +29,26 @@ for text, expected_plain, expected_spans in cases:
     if not ok:
         print("      plain=", repr(plain), "expected", repr(expected_plain))
         print("      spans=", spans, "expected", expected_spans)
+        failures += 1
+
+print()
+trailing_cases = [
+    ("**bold**", ("bold", 0, "bold", None, 2, 2)),
+    ("a `code`", ("code", 2, "code", None, 1, 1)),
+    ("x *it*", ("italic", 2, "it", None, 1, 1)),
+    ("~~s~~", ("strike", 0, "s", None, 2, 2)),
+    ("[t](u)", ("link", 0, "t", "u", 1, 4)),
+    ("**bold*", None),
+    ("*bold", None),
+    ("no markers here", None),
+    ("plain **b** trailing", None),
+]
+for text, expected in trailing_cases:
+    got = trailing_inline(text)
+    ok = got == expected
+    print(("PASS  " if ok else "FAIL  ") + "trailing " + repr(text))
+    if not ok:
+        print("      got=", got, "expected=", expected)
         failures += 1
 
 print()

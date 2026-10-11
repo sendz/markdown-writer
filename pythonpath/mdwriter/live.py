@@ -32,7 +32,7 @@ from mdwriter.markdown import (
     NUMBER_RE,
     QUOTE_RE,
     FENCE_RE,
-    split_inline,
+    trailing_inline,
 )
 
 # Numbering styles used for live lists.
@@ -128,14 +128,43 @@ def _apply_marker(model, text, paragraph, content):
         _set_paragraph_numbering(model, NUMBER_STYLE)
         return True
 
-    # --- inline markers ----------------------------------------------- #
-    plain, spans = split_inline(content)
-    if not spans or plain == content:
+    # --- trailing inline marker --------------------------------------- #
+    match = trailing_inline(content)
+    if match is None:
         return False
+    _log("  inline %s" % (match[0],))
+    return _convert_trailing(model, content, match)
 
-    _log("  inline: %r -> %r" % (content, plain))
-    paragraph.setString(plain)
-    _apply_spans(text, _paragraph_cursor(model), spans)
+
+def _delete_range(model, offset, count):
+    if count <= 0:
+        return
+    text = model.getText()
+    paragraph = _paragraph_cursor(model)
+    cursor = text.createTextCursorByRange(paragraph.getStart())
+    cursor.goRight(offset, False)
+    cursor.goRight(count, True)
+    cursor.setString("")
+
+
+def _convert_trailing(model, content, match):
+    """Convert the inline pattern at the end of the paragraph in place.
+
+    Only the marker characters are deleted and the character attributes are
+    applied to the inner range, so any other formatting on the line is kept.
+    """
+    kind, start, inner, payload, prefix_len, suffix_len = match
+    # delete the closing marker first so the opening marker keeps its offset
+    _delete_range(model, len(content) - suffix_len, suffix_len)
+    _delete_range(model, start, prefix_len)
+
+    text = model.getText()
+    paragraph = _paragraph_cursor(model)
+    cursor = text.createTextCursorByRange(paragraph.getStart())
+    cursor.goRight(start, False)
+    cursor.goRight(len(inner), True)
+    _apply_span(cursor, kind, payload)
+    _log("  inline %s -> %r" % (kind, inner))
     _reset_typing_attributes(model)
     return True
 
@@ -237,15 +266,6 @@ def _set_paragraph_style(model, style):
 
 def _set_paragraph_numbering(model, style):
     _paragraph_cursor(model).setPropertyValue("NumberingStyleName", style)
-
-
-def _apply_spans(text, paragraph, spans):
-    cursor = text.createTextCursorByRange(paragraph.getStart())
-    for start, end, kind, payload in spans:
-        cursor.gotoStartOfParagraph(False)
-        cursor.goRight(start, False)
-        cursor.goRight(end - start, True)
-        _apply_span(cursor, kind, payload)
 
 
 def _apply_span(cursor, kind, payload):
