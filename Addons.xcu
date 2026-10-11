@@ -17,189 +17,12 @@
         </prop>
         <node oor:name="Submenu">
 
-          <node oor:name="m_bold" oor:op="replace">
+          <node oor:name="m_live" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:bold</value>
+              <value>org.sendyyeah.mdwriter:togglelive</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Bold</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_italic" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:italic</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Italic</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_strike" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:strike</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Strikethrough</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_code" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:code</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Inline Code</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_sep1" oor:op="replace">
-            <prop oor:name="Context" oor:type="xs:string">
-              <value>separator</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_h1" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:heading1</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Heading 1</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_h2" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:heading2</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Heading 2</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_h3" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:heading3</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Heading 3</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_h4" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:heading4</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Heading 4</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_h5" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:heading5</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Heading 5</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_h6" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:heading6</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Heading 6</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_body" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:body</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Body Text</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_sep2" oor:op="replace">
-            <prop oor:name="Context" oor:type="xs:string">
-              <value>separator</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_bullet" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:bullet</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Bullet List</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_number" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:number</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Numbered List</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_quote" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:quote</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Block Quote</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_codeblock" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:codeblock</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Code Block</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_hr" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:hr</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Horizontal Rule</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_sep3" oor:op="replace">
-            <prop oor:name="Context" oor:type="xs:string">
-              <value>separator</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_link" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:link</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Insert Link…</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_table" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:table</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Insert Table</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_sep_file" oor:op="replace">
-            <prop oor:name="Context" oor:type="xs:string">
-              <value>separator</value>
+              <value xml:lang="en-US">Live Markdown</value>
             </prop>
           </node>
 
@@ -212,12 +35,12 @@
             </prop>
           </node>
 
-          <node oor:name="m_exportmd" oor:op="replace">
+          <node oor:name="m_source" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:exportmd</value>
+              <value>org.sendyyeah.mdwriter:source</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Export as Markdown…</value>
+              <value xml:lang="en-US">Edit Markdown Source…</value>
             </prop>
           </node>
 
@@ -230,36 +53,9 @@
             </prop>
           </node>
 
-          <node oor:name="m_preview" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:preview</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Preview Markdown</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_source" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:source</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Edit Markdown Source…</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_sep4" oor:op="replace">
+          <node oor:name="m_sep_about" oor:op="replace">
             <prop oor:name="Context" oor:type="xs:string">
               <value>separator</value>
-            </prop>
-          </node>
-
-          <node oor:name="m_live" oor:op="replace">
-            <prop oor:name="URL" oor:type="xs:string">
-              <value>org.sendyyeah.mdwriter:togglelive</value>
-            </prop>
-            <prop oor:name="Title" oor:type="xs:string">
-              <value xml:lang="en-US">Toggle Live Markdown</value>
             </prop>
           </node>
 

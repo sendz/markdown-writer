@@ -35,11 +35,16 @@ LibreOffice** after (re)installing for changes to take effect.
 
 ## Usage
 
-After installing and restarting Writer, open the new **Markdown** menu.
+After installing and restarting Writer, open the new **Markdown** menu. It is
+deliberately small: **Live Markdown** (check box), **Open Markdown File…**,
+**Edit Markdown Source…**, **Save as Markdown…**, and **About Markdown Writer**
+at the bottom. Basic formatting is done by typing Markdown syntax (live mode)
+or via the toolbar / keyboard shortcuts.
 
 ### Formatting commands
 
-Apply Markdown semantics to the current selection or paragraph:
+Available from the **Markdown** toolbar and the keyboard shortcuts below
+(they are intentionally not in the menu):
 
 - **Bold**, **Italic**, **Strikethrough**, **Inline Code**
 - **Heading 1** … **Heading 6**, **Body Text**
@@ -49,10 +54,7 @@ Apply Markdown semantics to the current selection or paragraph:
 ### Import / export
 
 - **Open Markdown File…** — open a `.md` file as a Writer document.
-- **Export as Markdown…** — write the current document to a `.md` file
-  (the open document is left untouched).
-- **Save as Markdown…** — save the current document as `.md` (switches the
-  document to the Markdown filter).
+- **Save as Markdown…** — save the current document as `.md`.
 
 ### Keyboard shortcuts
 
@@ -69,8 +71,6 @@ with built-in Writer shortcuts):
 
 ### Preview and source editing
 
-- **Preview Markdown** — renders the current document as HTML in a separate
-  window (a read-only preview you can place next to the editor).
 - **Edit Markdown Source…** — opens the **Markdown Editor** dialog with the
   Markdown source. A read-only preview window opens beside it (LibreOffice does
   not allow embedding a rendered document view inside a custom dialog, so it is
@@ -97,7 +97,7 @@ replaced by real formatting:
 | `` `code` ``        | inline code                      |
 | `[text](url)`       | hyperlink                        |
 
-Live mode is **off by default**. Tick **Markdown ▸ Toggle Live Markdown** (a
+Live mode is **off by default**. Tick **Markdown ▸ Live Markdown** (a
 check box: ticked = Live ON) to enable it for the current and new documents.
 Live attaches itself to every Writer document created or loaded while it is
 enabled.
@@ -107,7 +107,7 @@ enabled.
 > crashes some LibreOffice builds (an uncaught `std::out_of_range` in the GTK3
 > VCL plugin). Live conversion of these block markers is therefore **off by
 > default**; inline markers (bold, italic, code, strike, link) stay live, and
-> headings/lists/quote/code are one menu click (or `Ctrl+Alt+…`) away. On a
+> headings/lists/quote/code are one toolbar click (or `Ctrl+Alt+…`) away. On a
 > LibreOffice build without the bug you can re-enable it with the environment
 > variable `MARKDOWN_WRITER_LIVE_BLOCKS=1`.
 
