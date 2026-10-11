@@ -231,7 +231,16 @@ class SidebarPanel(unohelper.Base, XServiceInfo, XToolPanel, XSidebarPanel):
         try:
             toolkit = smgr.createInstanceWithContext(
                 "com.sun.star.awt.Toolkit", self.ctx)
-            self.dialog.createPeer(toolkit, parent)
+            # createPeer expects the *peer* of the parent window, otherwise the
+            # dialog becomes a separate top-level window instead of being
+            # embedded in the sidebar panel.
+            parent_peer = parent
+            try:
+                parent_peer = parent.queryInterface(
+                    uno.getTypeByName("com.sun.star.awt.XWindowPeer"))
+            except Exception:
+                pass
+            self.dialog.createPeer(toolkit, parent_peer)
             self.dialog.setPosSize(0, 0, width_px, height_px, 15)
             self.dialog.setVisible(True)
         except Exception as exc:
