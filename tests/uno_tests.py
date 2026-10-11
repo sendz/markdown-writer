@@ -119,7 +119,19 @@ def test_formatter(ctx):
     check("code block", read_prop("ParaStyleName", 0, 1) == "Preformatted Text")
     formatter.toggle_code_block(ctx, doc)
     formatter.insert_rule(ctx, doc)
-    check("horizontal rule", read_prop("ParaStyleName", 0, 1) == "Horizontal Line")
+    found_rule = False
+    scan = text.createTextCursor()
+    scan.gotoStart(False)
+    while True:
+        scan.gotoStartOfParagraph(False)
+        scan.gotoEndOfParagraph(True)
+        border = scan.getPropertyValue("BottomBorder")
+        if border.LineStyle == 1 and border.LineWidth > 0:
+            found_rule = True
+            break
+        if not scan.gotoNextParagraph(False):
+            break
+    check("horizontal rule (single line)", found_rule)
     formatter.set_body(ctx, doc)
 
     print("== lists and table ==")

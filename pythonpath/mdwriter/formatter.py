@@ -22,7 +22,6 @@ SLANT = "com.sun.star.awt.FontSlant"
 BODY_STYLE = "Text body"
 QUOTE_STYLE = "Quotations"
 CODE_BLOCK_STYLE = "Preformatted Text"
-RULE_STYLE = "Horizontal Line"
 
 CHAR_CODE_STYLE = "Source Text"
 CHAR_STANDARD_STYLE = "Standard"
@@ -156,10 +155,26 @@ def toggle_code_block(ctx, model):
 
 
 def insert_rule(ctx, model):
-    """Insert a horizontal rule as its own paragraph."""
+    """Insert a horizontal rule (single line) as its own paragraph."""
     text = model.getText()
-    cursor = _para_cursor(model)
-    cursor.setPropertyValue("ParaStyleName", RULE_STYLE)
+    cursor = text.createTextCursorByRange(_selection(model))
+    # Put the rule on its own (new) paragraph so existing text is untouched.
+    cursor.gotoEndOfParagraph(False)
+    text.insertControlCharacter(
+        cursor,
+        uno.getConstantByName("com.sun.star.text.ControlCharacter.PARAGRAPH_BREAK"),
+        False)
+    paragraph = text.createTextCursorByRange(cursor)
+    paragraph.gotoStartOfParagraph(False)
+    paragraph.gotoEndOfParagraph(True)
+    paragraph.setPropertyValue("ParaStyleName", BODY_STYLE)
+
+    line = uno.createUnoStruct("com.sun.star.table.BorderLine2")
+    line.LineStyle = 1        # BorderLineStyle.SOLID: a single line
+    line.LineWidth = 26       # 0.26 mm
+    line.Color = 0x000000
+    paragraph.setPropertyValue("BottomBorder", line)
+    paragraph.setPropertyValue("BottomBorderDistance", 0)
 
 
 # ---------------------------------------------------------------------- #
