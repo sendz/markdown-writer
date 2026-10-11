@@ -14,7 +14,7 @@ Markdown while working in Writer.
 | M2        | Live auto-format while typing (Typora-like)          | done  |
 | M3        | Markdown import/export helpers                       | done  |
 | M4        | Source + preview panel                               | done  |
-| M5        | Polish, docs, tests                                  | todo  |
+| M5        | Polish, docs, tests                                  | done  |
 
 ## Requirements
 
@@ -99,13 +99,32 @@ temporary headless LibreOffice.
 ## Project layout
 
 ```
-description.xml          # extension metadata
-META-INF/manifest.xml    # declares the Python UNO component
-Addons.xcu               # "Markdown" menu entries
-mdwriter.py              # UNO bootstrap (g_ImplementationHelper)
-pythonpath/mdwriter/     # Python implementation package
+description.xml            extension metadata
+META-INF/manifest.xml      declares the Python UNO component and its modules
+Addons.xcu                 "Markdown" menu and toolbar
+MarkdownWriter.xcu         best-effort document-event job registration
+mdwriter.py                UNO bootstrap (g_ImplementationHelper)
+pythonpath/mdwriter/
+    __init__.py
+    dispatch.py            protocol handler (menu/toolbar commands)
+    formatter.py           formatting operations (bold, headings, ...)
+    live.py                live auto-formatting (document watcher + listener)
+    markdown.py            pure-text Markdown parsing
+    exporter.py            Markdown import/export helpers
+    md2html.py             Markdown -> HTML converter
+    preview.py             preview window + source editor dialog
+tests/                     unit and UNO integration tests
+build.sh install.sh uninstall.sh dev.sh
 ```
+
+## Limitations
+
+- Live formatting is a pragmatic, regex-based subset of Markdown, not a full
+  CommonMark implementation. Nested structures and tables typed as Markdown are
+  not auto-converted (use **Insert Table** for tables).
+- Live formatting asserts itself on the paragraph under the cursor; it consumes
+  the markers rather than hiding them.
 
 ## License
 
-Mozilla Public License 2.0 (MPL-2.0).
+Mozilla Public License 2.0 (MPL-2.0). See [LICENSE](LICENSE).

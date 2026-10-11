@@ -231,11 +231,11 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
             self._error("This command only works in a Writer document.")
             return
         url = exporter.choose_save_markdown(
-            self.ctx, exporter._default_name(model))
+            self.ctx, exporter.default_name(model))
         if not url:
             return
         try:
-            model.storeAsURL(url, (exporter._prop("FilterName", exporter.MARKDOWN_FILTER),))
+            model.storeAsURL(url, (exporter.prop("FilterName", exporter.MARKDOWN_FILTER),))
         except Exception as exc:
             self._error("Could not save as Markdown: %s" % exc)
 

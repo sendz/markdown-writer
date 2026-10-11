@@ -21,7 +21,7 @@ FILESAVE_AUTOEXTENSION = 2
 MARKDOWN_EXTENSIONS = "*.md;*.markdown;*.mdown;*.mkd"
 
 
-def _prop(name, value):
+def prop(name, value):
     prop = PropertyValue()
     prop.Name = name
     prop.Value = value
@@ -39,15 +39,15 @@ def _desktop(ctx):
 def load_markdown(ctx, url):
     """Open a Markdown file as a Writer document."""
     props = (
-        _prop("FilterName", MARKDOWN_FILTER),
-        _prop("AsTemplate", False),
+        prop("FilterName", MARKDOWN_FILTER),
+        prop("AsTemplate", False),
     )
     return _desktop(ctx).loadComponentFromURL(url, "_blank", 0, props)
 
 
 def export_markdown(model, url):
     """Write *model* to *url* using the Markdown filter (document untouched)."""
-    model.storeToURL(url, (_prop("FilterName", MARKDOWN_FILTER),))
+    model.storeToURL(url, (prop("FilterName", MARKDOWN_FILTER),))
 
 
 # ---------------------------------------------------------------------- #
@@ -94,13 +94,13 @@ def open_dialog(ctx, frame=None):
 
 
 def export_dialog(ctx, model):
-    default = _default_name(model)
+    default = default_name(model)
     url = choose_save_markdown(ctx, default)
     if url:
         export_markdown(model, url)
 
 
-def _default_name(model):
+def default_name(model):
     try:
         title = model.getURL()
     except Exception:
