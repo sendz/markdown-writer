@@ -17,9 +17,6 @@ PACKAGE_ITEMS=(
     Addons.xcu
     Shortcuts.xcu
     ProtocolHandler.xcu
-    Sidebar.xcu
-    Factories.xcu
-    MarkdownWriter.xcu
     mdwriter.py
     pythonpath
 )

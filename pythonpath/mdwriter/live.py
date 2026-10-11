@@ -21,8 +21,6 @@ import uno
 import unohelper
 
 from com.sun.star.document import XDocumentEventListener
-from com.sun.star.task import XJob
-from com.sun.star.lang import XServiceInfo
 from com.sun.star.util import XModifyListener
 
 from mdwriter import formatter
@@ -411,53 +409,3 @@ def bootstrap(ctx):
         return False
 
 
-# ---------------------------------------------------------------------- #
-# Optional job (best effort automatic start-up hook)
-# ---------------------------------------------------------------------- #
-JOB_IMPLE_NAME = "com.sendyyeah.mdwriter.Job"
-JOB_SERVICE_NAMES = ("com.sun.star.task.Job",)
-
-
-def _find_document(value):
-    try:
-        if value.supportsService("com.sun.star.text.TextDocument"):
-            return value
-    except Exception:
-        pass
-    inner = getattr(value, "Value", None)
-    if inner is not None and inner is not value:
-        found = _find_document(inner)
-        if found is not None:
-            return found
-    try:
-        items = list(value)
-    except TypeError:
-        return None
-    for item in items:
-        found = _find_document(item)
-        if found is not None:
-            return found
-    return None
-
-
-class Job(unohelper.Base, XJob, XServiceInfo):
-
-    def __init__(self, ctx, *args):
-        self.ctx = ctx
-
-    def getImplementationName(self):
-        return JOB_IMPLE_NAME
-
-    def supportsService(self, name):
-        return name in JOB_SERVICE_NAMES
-
-    def getSupportedServiceNames(self):
-        return JOB_SERVICE_NAMES
-
-    def execute(self, args):
-        _log("Job.execute")
-        bootstrap(self.ctx)
-        model = _find_document(args)
-        if model is not None:
-            attach(self.ctx, model)
-        return None

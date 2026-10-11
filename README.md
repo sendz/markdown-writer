@@ -59,9 +59,11 @@ Basic formatting is done by typing Markdown syntax (with Live Markdown enabled).
 
 ### Preview and source editing
 
-- **Edit Markdown Source…** — opens the **Markdown** deck in the **Sidebar**
-  (View ▸ Sidebar) with the document's Markdown source. **Apply** writes it back
-  to the document; **Reload** re-reads it from the document.
+- **Edit Markdown Source…** — opens the **Markdown Editor**, a modeless
+  dialog with the document's Markdown source. A preview window opens beside it
+  and is refreshed when you click **Refresh Preview** or move focus out of the
+  source field; **Apply to Document** replaces the current document with the
+  edited Markdown.
 
 ### Live Markdown (Typora-like)
 
