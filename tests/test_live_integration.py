@@ -137,6 +137,14 @@ def main():
     check("code fence consumed", para_text(6) == "")
     check("code fence -> preformatted", para_style(6) == "Preformatted Text")
 
+    new_paragraph()
+    type_text("~~gone~~")
+    check("strike markers consumed", para_text(7) == "gone")
+    c = para_cursor(7)
+    c.gotoStartOfParagraph(False)
+    c.goRight(4, True)
+    check("strike applied", int(c.getPropertyValue("CharStrikeout")) == 1)
+
     doc.close(False)
     doc_a.close(False)
 

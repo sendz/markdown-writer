@@ -17,6 +17,7 @@ NORMAL_WEIGHT = 100.0
 
 # --- enums ------------------------------------------------------------- #
 SLANT = "com.sun.star.awt.FontSlant"
+STRIKEOUT = "com.sun.star.awt.FontStrikeout"
 
 # --- style names (English UI) ------------------------------------------ #
 BODY_STYLE = "Text body"
@@ -114,7 +115,28 @@ def toggle_italic(ctx, model):
 
 
 def toggle_strike(ctx, model):
-    _dispatch(ctx, model, ".uno:Strikeout")
+    cursor = _char_cursor(model)
+    set_strike(cursor, not strike_is_on(cursor))
+
+
+def strike_is_on(cursor):
+    value = cursor.getPropertyValue("CharStrikeout")
+    try:
+        return value.value != 0          # pyuno Enum
+    except AttributeError:
+        try:
+            return int(value) != 0       # pyuno exposes the enum as int
+        except Exception:
+            return False
+
+
+def set_strike(cursor, on):
+    """Set strikethrough, tolerating the enum not being known to pyuno."""
+    try:
+        cursor.setPropertyValue(
+            "CharStrikeout", uno.Enum(STRIKEOUT, "SINGLE" if on else "NONE"))
+    except Exception:
+        cursor.setPropertyValue("CharStrikeout", 1 if on else 0)
 
 
 def toggle_code(ctx, model):

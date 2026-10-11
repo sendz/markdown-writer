@@ -210,12 +210,7 @@ def _apply_span(cursor, kind, payload):
     elif kind == "code":
         cursor.setPropertyValue("CharStyleName", formatter.CHAR_CODE_STYLE)
     elif kind == "strike":
-        try:
-            cursor.setPropertyValue(
-                "CharStrikeout",
-                uno.Enum("com.sun.star.awt.FontStrikeout", "SINGLE"))
-        except Exception:
-            pass
+        formatter.set_strike(cursor, True)
     elif kind == "link":
         cursor.setPropertyValue("HyperLinkURL", payload)
         cursor.setPropertyValue("CharStyleName", "Internet link")
