@@ -117,6 +117,20 @@ def main():
     check("inline code style applied",
           c.getPropertyValue("CharStyleName") == "Source Text")
 
+    check("bullet numbering applied",
+          para_cursor(1).getPropertyValue("NumberingStyleName") == "List 1")
+
+    new_paragraph()
+    type_text("1. first")
+    check("number marker consumed", para_text(5) == "first")
+    check("number numbering applied",
+          para_cursor(5).getPropertyValue("NumberingStyleName") == "Numbering 123")
+
+    new_paragraph()
+    type_text("```")
+    check("code fence consumed", para_text(6) == "")
+    check("code fence -> preformatted", para_style(6) == "Preformatted Text")
+
     doc.close(False)
     doc_a.close(False)
 

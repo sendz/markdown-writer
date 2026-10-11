@@ -35,6 +35,10 @@ from mdwriter.markdown import (
     split_inline,
 )
 
+# Numbering styles used for live lists.
+BULLET_STYLE = "List 1"
+NUMBER_STYLE = "Numbering 123"
+
 DEBUG_LOG = os.environ.get("MARKDOWN_WRITER_DEBUG_LOG")
 
 
@@ -52,20 +56,20 @@ def _log(message):
 # Live reformatting of the paragraph under the cursor
 # ---------------------------------------------------------------------- #
 def reformat(ctx, model):
-    """Reformat the paragraph at the cursor. Returns True if anything changed."""
+    """Reformat the paragraph at the cursor. Returns True if anything changed.
+
+    Everything is done with text cursors and paragraph properties.  The view
+    cursor and ``.uno:`` dispatches are deliberately avoided: editing the
+    document from inside a modify notification while the view is updating can
+    crash the office.
+    """
     if not formatter.is_writer(model):
         return False
-    controller = model.getCurrentController()
-    if controller is None:
+    if model.getCurrentController() is None:
         return False
 
     text = model.getText()
-    view_cursor = controller.getViewCursor()
-    paragraph = text.createTextCursorByRange(view_cursor)
-    if not paragraph.gotoStartOfParagraph(False):
-        return False
-    if not paragraph.gotoEndOfParagraph(True):
-        return False
+    paragraph = _paragraph_cursor(model)
     content = paragraph.getString()
     if not content:
         return False
@@ -73,41 +77,31 @@ def reformat(ctx, model):
     # --- block markers ------------------------------------------------ #
     match = HEADING_RE.match(content)
     if match:
-        paragraph.setString(match.group(2))
-        _select_paragraph(model)
-        formatter.set_heading(ctx, model, len(match.group(1)))
-        _collapse_to_paragraph_end(model)
+        _delete_prefix(text, paragraph, len(match.group(0)) - len(match.group(2)))
+        _set_paragraph_style(model, "Heading %d" % len(match.group(1)))
         return True
 
-    if FENCE_RE.match(content):
-        paragraph.setString("")
-        _select_paragraph(model)
-        formatter.toggle_code_block(ctx, model)
-        _collapse_to_paragraph_end(model)
+    if FENCE_RE.match(content.strip()):
+        _clear_paragraph(text, paragraph)
+        _set_paragraph_style(model, formatter.CODE_BLOCK_STYLE)
         return True
 
     match = QUOTE_RE.match(content)
     if match:
-        paragraph.setString(match.group(1))
-        _select_paragraph(model)
-        formatter.toggle_quote(ctx, model)
-        _collapse_to_paragraph_end(model)
+        _delete_prefix(text, paragraph, len(content) - len(match.group(1)))
+        _set_paragraph_style(model, formatter.QUOTE_STYLE)
         return True
 
     match = BULLET_RE.match(content)
     if match:
-        paragraph.setString(match.group(1))
-        _select_paragraph(model)
-        formatter.toggle_bullet_list(ctx, model)
-        _collapse_to_paragraph_end(model)
+        _delete_prefix(text, paragraph, len(content) - len(match.group(1)))
+        _set_paragraph_numbering(model, BULLET_STYLE)
         return True
 
     match = NUMBER_RE.match(content)
     if match:
-        paragraph.setString(match.group(1))
-        _select_paragraph(model)
-        formatter.toggle_number_list(ctx, model)
-        _collapse_to_paragraph_end(model)
+        _delete_prefix(text, paragraph, len(content) - len(match.group(1)))
+        _set_paragraph_numbering(model, NUMBER_STYLE)
         return True
 
     # --- inline markers ----------------------------------------------- #
@@ -116,8 +110,7 @@ def reformat(ctx, model):
         return False
 
     paragraph.setString(plain)
-    _apply_spans(ctx, text, paragraph, spans)
-    _collapse_to_paragraph_end(model)
+    _apply_spans(text, _paragraph_cursor(model), spans)
     return True
 
 
@@ -125,31 +118,46 @@ def _view_cursor(model):
     return model.getCurrentController().getViewCursor()
 
 
-def _select_paragraph(model):
+def _paragraph_cursor(model):
     text = model.getText()
     cursor = text.createTextCursorByRange(_view_cursor(model))
     cursor.gotoStartOfParagraph(False)
     cursor.gotoEndOfParagraph(True)
-    _view_cursor(model).gotoRange(cursor, False)
+    return cursor
 
 
-def _collapse_to_paragraph_end(model):
-    text = model.getText()
-    cursor = text.createTextCursorByRange(_view_cursor(model))
-    cursor.gotoEndOfParagraph(False)
-    _view_cursor(model).gotoRange(cursor, False)
+def _delete_prefix(text, paragraph, count):
+    if count <= 0:
+        return
+    cursor = text.createTextCursorByRange(paragraph.getStart())
+    cursor.goRight(count, True)
+    cursor.setString("")
 
 
-def _apply_spans(ctx, text, paragraph, spans):
+def _clear_paragraph(text, paragraph):
+    cursor = text.createTextCursorByRange(paragraph.getStart())
+    cursor.gotoEndOfParagraph(True)
+    cursor.setString("")
+
+
+def _set_paragraph_style(model, style):
+    _paragraph_cursor(model).setPropertyValue("ParaStyleName", style)
+
+
+def _set_paragraph_numbering(model, style):
+    _paragraph_cursor(model).setPropertyValue("NumberingStyleName", style)
+
+
+def _apply_spans(text, paragraph, spans):
     cursor = text.createTextCursorByRange(paragraph.getStart())
     for start, end, kind, payload in spans:
         cursor.gotoStartOfParagraph(False)
         cursor.goRight(start, False)
         cursor.goRight(end - start, True)
-        _apply_span(ctx, cursor, kind, payload)
+        _apply_span(cursor, kind, payload)
 
 
-def _apply_span(ctx, cursor, kind, payload):
+def _apply_span(cursor, kind, payload):
     if kind == "bold":
         cursor.setPropertyValue("CharWeight", formatter.BOLD_WEIGHT)
     elif kind == "italic":
