@@ -90,6 +90,17 @@ def edit_source(ctx, model, frame):
     md_path = os.path.join(tempfile.gettempdir(), "mdwriter-source.md")
     markdown_text = document_to_markdown(model, md_path)
 
+    dialog, control = _build_source_dialog(ctx, frame, markdown_text)
+    _wire_preview_button(ctx, dialog, control)
+    try:
+        if dialog.execute() == DIALOG_OK:
+            _apply_source(ctx, model, control.getText())
+    finally:
+        dialog.dispose()
+
+
+def _build_source_dialog(ctx, frame, markdown_text):
+    """Create the source editor dialog. Returns (dialog, source_control)."""
     smgr = ctx.ServiceManager
     model_dialog = smgr.createInstanceWithContext(
         "com.sun.star.awt.UnoControlDialogModel", ctx)
@@ -122,7 +133,10 @@ def edit_source(ctx, model, frame):
 
     control = dialog.getControl("source")
     control.setText(markdown_text)
+    return dialog, control
 
+
+def _wire_preview_button(ctx, dialog, control):
     def do_preview():
         markdown_to_html_file(control.getText())
         _desktop(ctx).loadComponentFromURL(
@@ -130,12 +144,6 @@ def edit_source(ctx, model, frame):
             (_prop("FilterName", HTML_FILTER),))
 
     dialog.getControl("preview").addActionListener(_ActionListener(do_preview))
-
-    try:
-        if dialog.execute() == DIALOG_OK:
-            _apply_source(ctx, model, control.getText())
-    finally:
-        dialog.dispose()
 
 
 def _apply_source(ctx, model, markdown_text):
