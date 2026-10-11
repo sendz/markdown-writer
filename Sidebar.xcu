@@ -2,10 +2,12 @@
 <!--
   Custom sidebar deck "Markdown" with one panel: the Markdown source editor.
 
-  * Content/DeckList    : the deck
-  * Content/PanelList   : the panel, bound to the deck and to a factory URL
-  * Registered/ContentFactories : our com.sun.star.ui.XUIElementFactory, which
-    creates the panel (Type "toolpanel").
+  * Content/DeckList    : the deck (needs a Title, Id, IconURL, ContextList)
+  * Content/PanelList   : the panel; its ImplementationURL is
+    private:resource/toolpanel/<FactoryName>/<PanelName>, so the middle token
+    ("com.sendyyeah.mdwriter") must match the factory Name below.
+  * ContextList entries have the form "Application, Context, Visible"
+    (WriterVariants = Writer).
 -->
 <oor:component-data xmlns:oor="http://openoffice.org/2001/registry"
                     xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -22,10 +24,14 @@
         <prop oor:name="Id" oor:type="xs:string">
           <value>MarkdownDeck</value>
         </prop>
+        <prop oor:name="IconURL" oor:type="xs:string">
+          <value>private:graphicrepository/sfx2/res/symphony/sidebar-property-large.png</value>
+        </prop>
         <prop oor:name="ContextList" oor:type="oor:string-list">
-          <value>com.sun.star.text.TextDocument</value>
-          <value>com.sun.star.text.GlobalDocument</value>
-          <value>com.sun.star.text.WebDocument</value>
+          <value oor:separator=";">WriterVariants, any, visible</value>
+        </prop>
+        <prop oor:name="OrderIndex" oor:type="xs:int">
+          <value>500</value>
         </prop>
       </node>
     </node>
@@ -51,9 +57,7 @@
           <value>false</value>
         </prop>
         <prop oor:name="ContextList" oor:type="oor:string-list">
-          <value>com.sun.star.text.TextDocument</value>
-          <value>com.sun.star.text.GlobalDocument</value>
-          <value>com.sun.star.text.WebDocument</value>
+          <value oor:separator=";">WriterVariants, any, visible</value>
         </prop>
       </node>
     </node>
