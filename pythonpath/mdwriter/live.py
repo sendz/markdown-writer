@@ -73,33 +73,41 @@ def reformat(ctx, model):
     content = paragraph.getString()
     if not content:
         return False
+    _log("reformat content=%r" % (content,))
 
     # --- block markers ------------------------------------------------ #
     match = HEADING_RE.match(content)
     if match:
+        _log("  heading %d: delete %d chars" % (
+            len(match.group(1)), len(match.group(0)) - len(match.group(2))))
         _delete_prefix(text, paragraph, len(match.group(0)) - len(match.group(2)))
+        _log("  set ParaStyleName=Heading %d" % len(match.group(1)))
         _set_paragraph_style(model, "Heading %d" % len(match.group(1)))
         return True
 
     if FENCE_RE.match(content.strip()):
+        _log("  fence: clear + preformatted")
         _clear_paragraph(text, paragraph)
         _set_paragraph_style(model, formatter.CODE_BLOCK_STYLE)
         return True
 
     match = QUOTE_RE.match(content)
     if match:
+        _log("  quote: delete prefix")
         _delete_prefix(text, paragraph, len(content) - len(match.group(1)))
         _set_paragraph_style(model, formatter.QUOTE_STYLE)
         return True
 
     match = BULLET_RE.match(content)
     if match:
+        _log("  bullet: delete prefix + %s" % BULLET_STYLE)
         _delete_prefix(text, paragraph, len(content) - len(match.group(1)))
         _set_paragraph_numbering(model, BULLET_STYLE)
         return True
 
     match = NUMBER_RE.match(content)
     if match:
+        _log("  number: delete prefix + %s" % NUMBER_STYLE)
         _delete_prefix(text, paragraph, len(content) - len(match.group(1)))
         _set_paragraph_numbering(model, NUMBER_STYLE)
         return True
@@ -109,6 +117,7 @@ def reformat(ctx, model):
     if not spans or plain == content:
         return False
 
+    _log("  inline: %r -> %r" % (content, plain))
     paragraph.setString(plain)
     _apply_spans(text, _paragraph_cursor(model), spans)
     return True
@@ -202,7 +211,7 @@ def refresh_indicator(ctx):
         if LIVE_ENABLED:
             if _indicator is None:
                 _indicator = frame.createStatusIndicator()
-                _indicator.start("Markdown: Live", 0)
+                _indicator.start("Markdown: Live", 100)
         else:
             if _indicator is not None:
                 _indicator.end()
