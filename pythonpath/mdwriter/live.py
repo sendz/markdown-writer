@@ -211,13 +211,20 @@ LIVE_ENABLED = True
 
 _attached = {}
 _busy = False
+_internal = set()
+
+
+def mark_internal(model):
+    """Exclude *model* from live formatting (e.g. the preview document)."""
+    _internal.add(model)
+    detach(model)
 
 
 def attach(ctx, model):
     """Install the live listener on *model* (idempotent)."""
     if not LIVE_ENABLED or not formatter.is_writer(model):
         return
-    if model in _attached:
+    if model in _internal or model in _attached:
         return
     listener = LiveListener(ctx, model)
     model.addModifyListener(listener)

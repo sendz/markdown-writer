@@ -71,10 +71,13 @@ with built-in Writer shortcuts):
 
 - **Preview Markdown** — renders the current document as HTML in a separate
   window (a read-only preview you can place next to the editor).
-- **Edit Markdown Source…** — opens the **Markdown Editor**: a single window
-  with the Markdown source on the left and a **rendered preview embedded in the
-  same window** on the right. The preview updates as you type. **Apply to
-  Document** replaces the current document with the edited Markdown.
+- **Edit Markdown Source…** — opens the **Markdown Editor** dialog with the
+  Markdown source. A read-only preview window opens beside it (LibreOffice does
+  not allow embedding a rendered document view inside a custom dialog, so it is
+  a separate window that is positioned next to the editor). The preview is
+  refreshed when you click **Refresh Preview** or move focus out of the source
+  field; **Apply to Document** replaces the current document with the edited
+  Markdown.
 
 ### Live Markdown (Typora-like)
 

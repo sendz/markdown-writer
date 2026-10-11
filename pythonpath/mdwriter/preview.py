@@ -14,22 +14,20 @@ import tempfile
 import uno
 import unohelper
 
-from com.sun.star.awt import XActionListener, XTextListener
+from com.sun.star.awt import XActionListener, XTextListener, XFocusListener
 from com.sun.star.beans import PropertyValue
 
 from mdwriter import exporter
 from mdwriter import md2html
+from mdwriter import live
 
 HTML_FILTER = "HTML (StarWriter)"
 
 PUSHBUTTON_STANDARD = 0
 POS_SIZE = 15  # X | Y | WIDTH | HEIGHT
 
-# Desired geometry in real pixels (scaled to the display DPI at runtime).
+# Default dialog size in real pixels (scaled to the display DPI at runtime).
 DIALOG_PX_W, DIALOG_PX_H = 940, 600
-SRC_PX_X, SRC_PX_Y, SRC_PX_W, SRC_PX_H = 6, 6, 460, 520
-EXP_PX_X, EXP_PX_GAP = 474, 6
-BTN_PX_Y, BTN_PX_H = 534, 26
 
 PREVIEW_HTML = os.path.join(tempfile.gettempdir(), "mdwriter-preview.html")
 
@@ -113,32 +111,73 @@ class _TextListener(unohelper.Base, XTextListener):
         pass
 
 
+class _FocusListener(unohelper.Base, XFocusListener):
+
+    def __init__(self, callback):
+        self.callback = callback
+
+    def focusGained(self, event):
+        pass
+
+    def focusLost(self, event):
+        self.callback()
+
+    def disposing(self, source):
+        pass
+
+
 # ---------------------------------------------------------------------- #
 # Single-window editor
 # ---------------------------------------------------------------------- #
+def _screen_size(ctx, frame):
+    try:
+        win = frame.getContainerWindow()
+        rect = win.getPosSize()
+        return rect.Width, rect.Height
+    except Exception:
+        return 1280, 800
+
+
 def edit_source(ctx, model, frame):
-    """Open the source editor with the preview embedded in the same dialog."""
+    """Open the source editor with a live preview beside it.
+
+    LibreOffice has no supported way to embed a rendered document view inside a
+    custom dialog (XContainerWindowProvider returns no window for a dialog
+    peer), so the preview lives in its own read-only window that is positioned
+    next to the editor and refreshed as you type.
+    """
     md_path = os.path.join(tempfile.gettempdir(), "mdwriter-source.md")
     markdown_text = document_to_markdown(model, md_path)
 
-    dialog, control = _build_source_dialog(ctx, frame, markdown_text)
-    preview_model, preview_window = _embed_preview(ctx, dialog)
-    _update_embedded(ctx, preview_model, markdown_text)
+    screen_w, screen_h = _screen_size(ctx, frame)
+    editor_w = min(700, max(420, screen_w // 2))
+
+    _write_html(markdown_text)
+    dialog, control = _build_source_dialog(ctx, frame, markdown_text,
+                                           width_px=editor_w, height_px=screen_h)
+    preview_model = _open_preview(ctx)
+    try:
+        preview = preview_model.getCurrentController().getFrame().getContainerWindow()
+        preview.setPosSize(editor_w, 0, max(200, screen_w - editor_w), screen_h, POS_SIZE)
+    except Exception as exc:
+        _log("preview positioning failed: %r" % (exc,))
+    _load_preview(preview_model)
 
     def on_text_changed():
-        global _editor_busy
-        if _editor_busy:
-            return
-        _editor_busy = True
+        # Only regenerate the HTML file here.  Modifying a document while the
+        # dialog is processing key events can crash the office, so the preview
+        # document is updated when focus leaves the field or on Refresh.
         try:
-            _update_embedded(ctx, preview_model, control.getText())
+            _write_html(control.getText())
         except Exception as exc:
-            _log("live preview failed: %r" % (exc,))
-        finally:
-            _editor_busy = False
+            _log("html write failed: %r" % (exc,))
 
     def refresh():
-        _update_embedded(ctx, preview_model, control.getText())
+        _write_html(control.getText())
+        _load_preview(preview_model)
+
+    def on_focus_lost(event):
+        _load_preview(preview_model)
 
     def apply():
         _apply_source(ctx, model, control.getText())
@@ -147,6 +186,7 @@ def edit_source(ctx, model, frame):
         _close_editor(dialog, preview_model)
 
     control.addTextListener(_TextListener(on_text_changed))
+    control.addFocusListener(_FocusListener(on_focus_lost))
     dialog.getControl("preview").addActionListener(_ActionListener(refresh))
     dialog.getControl("apply").addActionListener(_ActionListener(apply))
     dialog.getControl("close").addActionListener(_ActionListener(close))
@@ -155,35 +195,39 @@ def edit_source(ctx, model, frame):
     dialog.setVisible(True)
 
 
-def _embed_preview(ctx, dialog):
-    """Load an empty HTML document as a child window of *dialog*."""
+def _open_preview(ctx):
     path = markdown_to_html_file("")
     doc = _desktop(ctx).loadComponentFromURL(
         uno.systemPathToFileUrl(path), "_blank", 0,
-        (_prop("ParentWindow", dialog.getPeer()),))
-    window = doc.getCurrentController().getFrame().getContainerWindow()
-    # The embedded window is positioned in pixels; size it from the dialog.
-    size = dialog.getPeer().getPosSize()
-    x, y = EXP_PX_X, SRC_PX_Y
-    width = max(120, size.Width - x - EXP_PX_GAP)
-    height = max(120, BTN_PX_Y - y - EXP_PX_GAP)
-    window.setPosSize(x, y, width, height, POS_SIZE)
-    _log("embed preview: dialog=%r preview=(%d,%d,%d,%d)" % (size, x, y, width, height))
-    return doc, window
-
-
-def _update_embedded(ctx, preview_model, markdown_text):
-    path = markdown_to_html_file(markdown_text)
-    text = preview_model.getText()
-    cursor = text.createTextCursor()
-    cursor.gotoStart(False)
-    cursor.gotoEnd(True)
-    cursor.setString("")
-    cursor.gotoStart(False)
-    cursor.insertDocumentFromURL(
-        uno.systemPathToFileUrl(path),
         (_prop("FilterName", HTML_FILTER),))
-    preview_model.setModified(False)
+    # The preview must never be reformatted by live mode.
+    live.mark_internal(doc)
+    return doc
+
+
+def _write_html(markdown_text):
+    return markdown_to_html_file(markdown_text)
+
+
+def _load_preview(preview_model):
+    """Render the current PREVIEW_HTML file into the preview document."""
+    global _editor_busy
+    if _editor_busy:
+        return
+    _editor_busy = True
+    try:
+        text = preview_model.getText()
+        cursor = text.createTextCursor()
+        cursor.gotoStart(False)
+        cursor.gotoEnd(True)
+        cursor.setString("")
+        cursor.gotoStart(False)
+        cursor.insertDocumentFromURL(
+            uno.systemPathToFileUrl(PREVIEW_HTML),
+            (_prop("FilterName", HTML_FILTER),))
+        preview_model.setModified(False)
+    finally:
+        _editor_busy = False
 
 
 def _close_editor(dialog, preview_model):
@@ -227,7 +271,8 @@ def _ui_scale(ctx, frame):
     return _scale
 
 
-def _build_source_dialog(ctx, frame, markdown_text):
+def _build_source_dialog(ctx, frame, markdown_text,
+                         width_px=DIALOG_PX_W, height_px=DIALOG_PX_H):
     """Create the editor dialog. Returns (dialog, source_control)."""
     smgr = ctx.ServiceManager
     sx, sy = _ui_scale(ctx, frame)
@@ -238,36 +283,39 @@ def _build_source_dialog(ctx, frame, markdown_text):
     def my(px):
         return int(round(px / sy))
 
+    margin = 6
+    btn_h = 26
+    btn_y = height_px - margin - btn_h
     model_dialog = smgr.createInstanceWithContext(
         "com.sun.star.awt.UnoControlDialogModel", ctx)
     model_dialog.setPropertyValue("Title", "Markdown Editor")
-    model_dialog.setPropertyValue("Width", mx(DIALOG_PX_W))
-    model_dialog.setPropertyValue("Height", my(DIALOG_PX_H))
-    model_dialog.setPropertyValue("PositionX", mx(80))
-    model_dialog.setPropertyValue("PositionY", my(60))
+    model_dialog.setPropertyValue("Width", mx(width_px))
+    model_dialog.setPropertyValue("Height", my(height_px))
+    model_dialog.setPropertyValue("PositionX", mx(4))
+    model_dialog.setPropertyValue("PositionY", my(4))
 
     edit = model_dialog.createInstance("com.sun.star.awt.UnoControlEditModel")
-    _set(edit, Name="source", PositionX=mx(SRC_PX_X), PositionY=my(SRC_PX_Y),
-         Width=mx(SRC_PX_W), Height=my(SRC_PX_H),
+    _set(edit, Name="source", PositionX=mx(margin), PositionY=my(margin),
+         Width=mx(width_px - 2 * margin), Height=my(btn_y - 2 * margin),
          MultiLine=True, VScroll=True, HScroll=True, Tabstop=True)
     model_dialog.insertByName("source", edit)
 
     preview_btn = model_dialog.createInstance("com.sun.star.awt.UnoControlButtonModel")
     _set(preview_btn, Name="preview", Label="Refresh Preview",
-         PositionX=mx(SRC_PX_X), PositionY=my(BTN_PX_Y),
-         Width=mx(130), Height=my(BTN_PX_H), PushButtonType=PUSHBUTTON_STANDARD)
+         PositionX=mx(margin), PositionY=my(btn_y),
+         Width=mx(130), Height=my(btn_h), PushButtonType=PUSHBUTTON_STANDARD)
     model_dialog.insertByName("preview", preview_btn)
 
     ok_btn = model_dialog.createInstance("com.sun.star.awt.UnoControlButtonModel")
     _set(ok_btn, Name="apply", Label="Apply to Document",
-         PositionX=mx(SRC_PX_X + 140), PositionY=my(BTN_PX_Y),
-         Width=mx(150), Height=my(BTN_PX_H), PushButtonType=PUSHBUTTON_STANDARD)
+         PositionX=mx(margin + 140), PositionY=my(btn_y),
+         Width=mx(150), Height=my(btn_h), PushButtonType=PUSHBUTTON_STANDARD)
     model_dialog.insertByName("apply", ok_btn)
 
     close_btn = model_dialog.createInstance("com.sun.star.awt.UnoControlButtonModel")
     _set(close_btn, Name="close", Label="Close",
-         PositionX=mx(SRC_PX_X + 300), PositionY=my(BTN_PX_Y),
-         Width=mx(70), Height=my(BTN_PX_H), PushButtonType=PUSHBUTTON_STANDARD)
+         PositionX=mx(margin + 300), PositionY=my(btn_y),
+         Width=mx(70), Height=my(btn_h), PushButtonType=PUSHBUTTON_STANDARD)
     model_dialog.insertByName("close", close_btn)
 
     dialog = smgr.createInstanceWithContext("com.sun.star.awt.UnoControlDialog", ctx)
