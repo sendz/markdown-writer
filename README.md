@@ -54,14 +54,27 @@ Apply Markdown semantics to the current selection or paragraph:
 - **Save as Markdown…** — save the current document as `.md` (switches the
   document to the Markdown filter).
 
+### Keyboard shortcuts
+
+All commands also have `Ctrl+Alt+<key>` shortcuts (chosen to avoid clashing
+with built-in Writer shortcuts):
+
+| Shortcut | Action | | Shortcut | Action |
+|---|---|---|---|---|
+| `Ctrl+Alt+C` | Inline code | | `Ctrl+Alt+B` | Bullet list |
+| `Ctrl+Alt+F` | Code block | | `Ctrl+Alt+N` | Numbered list |
+| `Ctrl+Alt+Q` | Block quote | | `Ctrl+Alt+R` | Horizontal rule |
+| `Ctrl+Alt+X` | Strikethrough | | `Ctrl+Alt+K` | Insert link |
+| `Ctrl+Alt+P` | Preview | | `Ctrl+Alt+M` | Markdown editor |
+
 ### Preview and source editing
 
 - **Preview Markdown** — renders the current document as HTML in a separate
   window (a read-only preview you can place next to the editor).
-- **Edit Markdown Source…** — opens a dialog with the document's raw Markdown
-  for editing, with **Preview** (render in a window) and **Apply to Document**
-  (replace the current document with the edited Markdown, rendered through the
-  built-in Markdown filter).
+- **Edit Markdown Source…** — opens the **Markdown Editor**, a modeless dialog
+  with the document's Markdown source. A preview window updates **as you type**
+  (two panes), and **Apply to Document** replaces the current document with the
+  edited Markdown.
 
 ### Live Markdown (Typora-like)
 
@@ -85,7 +98,8 @@ Live mode is **on by default**. It attaches itself to every Writer document as
 soon as it is loaded *after* the extension has been activated. To make sure it
 is active, open a document, use any Markdown Writer command once (for example
 **Bold**), then open/create documents as usual. **Markdown ▸ Toggle Live
-Markdown** turns the feature off and on.
+Markdown** turns the feature off and on; the status bar shows a *Markdown:
+Live* indicator while it is enabled.
 
 ### Tests
 
@@ -102,17 +116,20 @@ temporary headless LibreOffice.
 description.xml            extension metadata
 META-INF/manifest.xml      declares the Python UNO component and its modules
 Addons.xcu                 "Markdown" menu and toolbar
+Icons.xcu                  generated image set for the toolbar buttons
+Shortcuts.xcu              Ctrl+Alt keyboard shortcuts
 MarkdownWriter.xcu         best-effort document-event job registration
 mdwriter.py                UNO bootstrap (g_ImplementationHelper)
 pythonpath/mdwriter/
     __init__.py
-    dispatch.py            protocol handler (menu/toolbar commands)
+    dispatch.py            protocol handler + XJobExecutor (menu/toolbar)
     formatter.py           formatting operations (bold, headings, ...)
-    live.py                live auto-formatting (document watcher + listener)
+    live.py                live auto-formatting + status indicator
     markdown.py            pure-text Markdown parsing
     exporter.py            Markdown import/export helpers
     md2html.py             Markdown -> HTML converter
-    preview.py             preview window + source editor dialog
+    preview.py             preview window + two-pane editor dialog
+tools/make_icons.py        generates icons/*.png and Icons.xcu
 tests/                     unit and UNO integration tests
 build.sh install.sh uninstall.sh dev.sh
 ```

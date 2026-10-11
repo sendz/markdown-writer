@@ -170,6 +170,41 @@ def _apply_span(ctx, cursor, kind, payload):
 
 
 # ---------------------------------------------------------------------- #
+# Status bar indicator (Live mode)
+# ---------------------------------------------------------------------- #
+_indicator = None
+
+
+def _current_frame(ctx):
+    try:
+        desktop = ctx.ServiceManager.createInstanceWithContext(
+            "com.sun.star.frame.Desktop", ctx)
+        return desktop.getCurrentFrame()
+    except Exception:
+        return None
+
+
+def refresh_indicator(ctx):
+    """Show or hide the status bar indicator reflecting Live mode."""
+    global _indicator
+    frame = _current_frame(ctx)
+    if frame is None:
+        return
+    try:
+        if LIVE_ENABLED:
+            if _indicator is None:
+                _indicator = frame.createStatusIndicator()
+                _indicator.start("Markdown: Live", 0)
+        else:
+            if _indicator is not None:
+                _indicator.end()
+                _indicator = None
+    except Exception as exc:
+        _log("status indicator failed: %r" % (exc,))
+        _indicator = None
+
+
+# ---------------------------------------------------------------------- #
 # Per-document listener
 # ---------------------------------------------------------------------- #
 LIVE_ENABLED = True
@@ -188,6 +223,7 @@ def attach(ctx, model):
     model.addModifyListener(listener)
     _attached[model] = listener
     _log("attached live listener to %r" % (model,))
+    refresh_indicator(ctx)
 
 
 def detach(model):

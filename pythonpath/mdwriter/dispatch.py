@@ -310,6 +310,7 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
             model = self._model()
             if formatter.is_writer(model):
                 live.attach(self.ctx, model)
+        live.refresh_indicator(self.ctx)
         state = "ON" if live.LIVE_ENABLED else "OFF"
         self._show_info(
             "Markdown Writer",

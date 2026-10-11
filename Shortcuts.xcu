@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Keyboard shortcuts for the Markdown Writer commands in Writer.
+
+  Ctrl+Alt+<key> combinations were chosen to avoid clashing with the built-in
+  Writer shortcuts (e.g. Ctrl+B/I/U, Ctrl+1..3 which are already headings).
+  MOD1 = Ctrl, MOD2 = Alt on Linux/Windows.
+-->
+<oor:component-data xmlns:oor="http://openoffice.org/2001/registry"
+                    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                    oor:name="Accelerators"
+                    oor:package="org.openoffice.Office">
+
+  <node oor:name="PrimaryKeys">
+    <node oor:name="Modules">
+      <node oor:name="com.sun.star.text.TextDocument" oor:op="fuse">
+
+        <node oor:name="C_MOD1_MOD2" oor:op="replace">
+          <prop oor:name="Command" oor:type="xs:string">
+            <value>service:com.sendyyeah.mdwriter.Dispatch?command=code</value>
+          </prop>
+        </node>
+
+        <node oor:name="F_MOD1_MOD2" oor:op="replace">
+          <prop oor:name="Command" oor:type="xs:string">
+            <value>service:com.sendyyeah.mdwriter.Dispatch?command=codeblock</value>
+          </prop>
+        </node>
+
+        <node oor:name="Q_MOD1_MOD2" oor:op="replace">
+          <prop oor:name="Command" oor:type="xs:string">
+            <value>service:com.sendyyeah.mdwriter.Dispatch?command=quote</value>
+          </prop>
+        </node>
+
+        <node oor:name="X_MOD1_MOD2" oor:op="replace">
+          <prop oor:name="Command" oor:type="xs:string">
+            <value>service:com.sendyyeah.mdwriter.Dispatch?command=strike</value>
+          </prop>
+        </node>
+
+        <node oor:name="B_MOD1_MOD2" oor:op="replace">
+          <prop oor:name="Command" oor:type="xs:string">
+            <value>service:com.sendyyeah.mdwriter.Dispatch?command=bullet</value>
+          </prop>
+        </node>
+
+        <node oor:name="N_MOD1_MOD2" oor:op="replace">
+          <prop oor:name="Command" oor:type="xs:string">
+            <value>service:com.sendyyeah.mdwriter.Dispatch?command=number</value>
+          </prop>
+        </node>
+
+        <node oor:name="R_MOD1_MOD2" oor:op="replace">
+          <prop oor:name="Command" oor:type="xs:string">
+            <value>service:com.sendyyeah.mdwriter.Dispatch?command=hr</value>
+          </prop>
+        </node>
+
+        <node oor:name="K_MOD1_MOD2" oor:op="replace">
+          <prop oor:name="Command" oor:type="xs:string">
+            <value>service:com.sendyyeah.mdwriter.Dispatch?command=link</value>
+          </prop>
+        </node>
+
+        <node oor:name="P_MOD1_MOD2" oor:op="replace">
+          <prop oor:name="Command" oor:type="xs:string">
+            <value>service:com.sendyyeah.mdwriter.Dispatch?command=preview</value>
+          </prop>
+        </node>
+
+        <node oor:name="M_MOD1_MOD2" oor:op="replace">
+          <prop oor:name="Command" oor:type="xs:string">
+            <value>service:com.sendyyeah.mdwriter.Dispatch?command=source</value>
+          </prop>
+        </node>
+
+      </node>
+    </node>
+  </node>
+
+</oor:component-data>
