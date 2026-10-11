@@ -42,10 +42,11 @@ NUMBER_STYLE = "Numbering 123"
 DEBUG_LOG = os.environ.get("MARKDOWN_WRITER_DEBUG_LOG")
 
 # Block conversion (headings, lists, quote, code fence) changes paragraph
-# styles, which triggers the UI update that crashes some LibreOffice GTK3
-# builds. Set MARKDOWN_WRITER_LIVE_BLOCKS=0 to disable it (inline markers keep
-# working).
-LIVE_BLOCKS = os.environ.get("MARKDOWN_WRITER_LIVE_BLOCKS", "1") != "0"
+# styles / numbering, which triggers a LibreOffice UI update; some builds crash
+# in the GTK3 VCL plugin when that happens from inside a modify notification.
+# It is therefore OFF by default. Set MARKDOWN_WRITER_LIVE_BLOCKS=1 to enable it
+# (e.g. on a LibreOffice build without the bug). Inline markers keep working.
+LIVE_BLOCKS = os.environ.get("MARKDOWN_WRITER_LIVE_BLOCKS", "0") != "0"
 
 
 def _log(message):

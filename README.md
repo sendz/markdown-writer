@@ -104,6 +104,15 @@ is active, open a document, use any Markdown Writer command once (for example
 Markdown** turns the feature off and on; the status bar shows a *Markdown:
 Live* indicator while it is enabled.
 
+> **Note on live block conversion.** Converting a line to a *paragraph style*
+> (heading, list, quote, code block) from inside the typing notification
+> crashes some LibreOffice builds (an uncaught `std::out_of_range` in the GTK3
+> VCL plugin). Live conversion of these block markers is therefore **off by
+> default**; inline markers (bold, italic, code, strike, link) stay live, and
+> headings/lists/quote/code are one menu click (or `Ctrl+Alt+…`) away. On a
+> LibreOffice build without the bug you can re-enable it with the environment
+> variable `MARKDOWN_WRITER_LIVE_BLOCKS=1`.
+
 ### Tests
 
 ```sh
