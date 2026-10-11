@@ -6,6 +6,7 @@
 
   <node oor:name="AddonUI">
 
+    <!-- ============================ Menu bar ============================ -->
     <node oor:name="OfficeMenuBar">
       <node oor:name="com.sendyyeah.mdwriter.Menu" oor:op="replace">
         <prop oor:name="Title" oor:type="xs:string">
@@ -16,12 +17,282 @@
         </prop>
         <node oor:name="Submenu">
 
+          <node oor:name="m_bold" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=bold</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Bold</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_italic" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=italic</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Italic</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_strike" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=strike</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Strikethrough</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_code" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=code</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Inline Code</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_sep1" oor:op="replace">
+            <prop oor:name="Context" oor:type="xs:string">
+              <value>separator</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_h1" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=heading1</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Heading 1</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_h2" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=heading2</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Heading 2</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_h3" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=heading3</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Heading 3</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_h4" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=heading4</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Heading 4</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_h5" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=heading5</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Heading 5</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_h6" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=heading6</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Heading 6</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_body" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=body</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Body Text</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_sep2" oor:op="replace">
+            <prop oor:name="Context" oor:type="xs:string">
+              <value>separator</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_bullet" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=bullet</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Bullet List</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_number" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=number</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Numbered List</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_quote" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=quote</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Block Quote</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_codeblock" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=codeblock</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Code Block</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_hr" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=hr</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Horizontal Rule</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_sep3" oor:op="replace">
+            <prop oor:name="Context" oor:type="xs:string">
+              <value>separator</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_link" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=link</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Insert Link…</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_table" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=table</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Insert Table</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_sep4" oor:op="replace">
+            <prop oor:name="Context" oor:type="xs:string">
+              <value>separator</value>
+            </prop>
+          </node>
+
           <node oor:name="m_about" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
               <value>service:com.sendyyeah.mdwriter.Dispatch?command=about</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">About Markdown Writer</value>
+            </prop>
+          </node>
+
+        </node>
+      </node>
+    </node>
+
+    <!-- ============================ Toolbar ============================ -->
+    <node oor:name="OfficeToolBar">
+      <node oor:name="com.sendyyeah.mdwriter.ToolBar" oor:op="replace">
+        <prop oor:name="Title" oor:type="xs:string">
+          <value xml:lang="en-US">Markdown</value>
+        </prop>
+        <node oor:name="Submenu">
+
+          <node oor:name="t_bold" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=bold</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Bold</value>
+            </prop>
+          </node>
+
+          <node oor:name="t_italic" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=italic</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Italic</value>
+            </prop>
+          </node>
+
+          <node oor:name="t_strike" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=strike</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Strikethrough</value>
+            </prop>
+          </node>
+
+          <node oor:name="t_code" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=code</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Inline Code</value>
+            </prop>
+          </node>
+
+          <node oor:name="t_h1" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=heading1</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Heading 1</value>
+            </prop>
+          </node>
+
+          <node oor:name="t_bullet" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=bullet</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Bullet List</value>
+            </prop>
+          </node>
+
+          <node oor:name="t_quote" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=quote</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Block Quote</value>
+            </prop>
+          </node>
+
+          <node oor:name="t_link" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=link</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Insert Link</value>
             </prop>
           </node>
 

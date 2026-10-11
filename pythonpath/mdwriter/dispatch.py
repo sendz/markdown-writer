@@ -15,6 +15,8 @@ from com.sun.star.frame import XDispatchProvider, XDispatch, XFrame
 from com.sun.star.lang import XInitialization, XServiceInfo
 from com.sun.star.awt import MessageBoxButtons
 
+from mdwriter import formatter
+
 IMPLE_NAME = "com.sendyyeah.mdwriter.Dispatch"
 SERVICE_NAMES = ("com.sun.star.frame.ProtocolHandler",)
 
@@ -125,6 +127,20 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
     # ------------------------------------------------------------------ #
     # Commands
     # ------------------------------------------------------------------ #
+    def _run(self, func):
+        """Run *func(ctx, model)* after checking we are in a Writer document."""
+        model = self._model()
+        if not formatter.is_writer(model):
+            self._error("This command only works in a Writer document.")
+            return
+        try:
+            func(self.ctx, model)
+        except Exception as exc:  # keep the UI informative, never crash
+            self._error("Command failed: %s" % exc)
+
+    def _run_heading(self, level):
+        self._run(lambda ctx, model: formatter.set_heading(ctx, model, level))
+
     def _cmd_about(self):
         import mdwriter
         self._show_info(
@@ -132,3 +148,57 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
             "Markdown Writer %s\n\n"
             "Write Markdown inside LibreOffice Writer." % mdwriter.__version__,
         )
+
+    def _cmd_bold(self):
+        self._run(formatter.toggle_bold)
+
+    def _cmd_italic(self):
+        self._run(formatter.toggle_italic)
+
+    def _cmd_strike(self):
+        self._run(formatter.toggle_strike)
+
+    def _cmd_code(self):
+        self._run(formatter.toggle_code)
+
+    def _cmd_heading1(self):
+        self._run_heading(1)
+
+    def _cmd_heading2(self):
+        self._run_heading(2)
+
+    def _cmd_heading3(self):
+        self._run_heading(3)
+
+    def _cmd_heading4(self):
+        self._run_heading(4)
+
+    def _cmd_heading5(self):
+        self._run_heading(5)
+
+    def _cmd_heading6(self):
+        self._run_heading(6)
+
+    def _cmd_body(self):
+        self._run(formatter.set_body)
+
+    def _cmd_bullet(self):
+        self._run(formatter.toggle_bullet_list)
+
+    def _cmd_number(self):
+        self._run(formatter.toggle_number_list)
+
+    def _cmd_quote(self):
+        self._run(formatter.toggle_quote)
+
+    def _cmd_codeblock(self):
+        self._run(formatter.toggle_code_block)
+
+    def _cmd_hr(self):
+        self._run(formatter.insert_rule)
+
+    def _cmd_link(self):
+        self._run(formatter.insert_link)
+
+    def _cmd_table(self):
+        self._run(formatter.insert_table)

@@ -21,5 +21,7 @@
                        manifest:media-type="text/x-python"/>
   <manifest:file-entry manifest:full-path="pythonpath/mdwriter/dispatch.py"
                        manifest:media-type="text/x-python"/>
+  <manifest:file-entry manifest:full-path="pythonpath/mdwriter/formatter.py"
+                       manifest:media-type="text/x-python"/>
 
 </manifest:manifest>
