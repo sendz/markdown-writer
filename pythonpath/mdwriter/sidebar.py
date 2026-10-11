@@ -180,6 +180,11 @@ class SidebarPanel(unohelper.Base, XServiceInfo, XToolPanel, XSidebarPanel):
         width_px, height_px = self._panel_size(parent)
         margin = 4
         btn_h = 26
+        try:
+            _log("panel parent=%r types=%s" % (
+                parent, [t.typeName for t in parent.getTypes()]))
+        except Exception as exc:
+            _log("panel parent types failed: %r" % (exc,))
 
         def mx(px):
             return int(round(px / sx))
@@ -238,8 +243,10 @@ class SidebarPanel(unohelper.Base, XServiceInfo, XToolPanel, XSidebarPanel):
             try:
                 parent_peer = parent.queryInterface(
                     uno.getTypeByName("com.sun.star.awt.XWindowPeer"))
-            except Exception:
-                pass
+                _log("panel parent XWindowPeer=%r" % (parent_peer,))
+            except Exception as exc:
+                _log("panel parent peer query failed: %r" % (exc,))
+                parent_peer = parent
             self.dialog.createPeer(toolkit, parent_peer)
             self.dialog.setPosSize(0, 0, width_px, height_px, 15)
             self.dialog.setVisible(True)
