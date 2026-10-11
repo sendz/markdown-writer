@@ -328,15 +328,18 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
             self._error("Could not render preview: %s" % exc)
 
     def _cmd_source(self):
-        model = self._model()
-        if not formatter.is_writer(model):
+        frame = self._frame()
+        if frame is None:
             self._error("This command only works in a Writer document.")
             return
         try:
-            preview.edit_source(self.ctx, model, self._frame())
+            helper = self.ctx.ServiceManager.createInstanceWithContext(
+                "com.sun.star.frame.DispatchHelper", self.ctx)
+            helper.executeDispatch(
+                frame, ".uno:SidebarDeck.MarkdownDeck", "", 0, ())
         except Exception as exc:
             preview._log("_cmd_source error: %r" % (exc,))
-            self._error("Could not open source editor: %s" % exc)
+            self._error("Could not open the Markdown sidebar: %s" % exc)
 
     def _cmd_togglelive(self):
         live.LIVE_ENABLED = not live.LIVE_ENABLED

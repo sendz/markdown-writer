@@ -15,6 +15,7 @@ import unohelper
 
 from mdwriter.dispatch import Dispatch
 from mdwriter.live import Job
+from mdwriter.sidebar import SidebarPanelFactory
 
 g_ImplementationHelper = unohelper.ImplementationHelper()
 
@@ -23,6 +24,13 @@ g_ImplementationHelper.addImplementation(
     Dispatch,
     "com.sendyyeah.mdwriter.Dispatch",
     ("com.sun.star.frame.ProtocolHandler",),
+)
+
+# Custom sidebar panel (source editor).
+g_ImplementationHelper.addImplementation(
+    SidebarPanelFactory,
+    "com.sendyyeah.mdwriter.PanelFactory",
+    ("com.sun.star.ui.UIElementFactory",),
 )
 
 # Best-effort automatic hook: installs the live formatter when a document is

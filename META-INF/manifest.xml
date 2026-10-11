@@ -15,6 +15,10 @@
                        manifest:media-type="application/vnd.sun.star.configuration-data"/>
   <manifest:file-entry manifest:full-path="ProtocolHandler.xcu"
                        manifest:media-type="application/vnd.sun.star.configuration-data"/>
+  <manifest:file-entry manifest:full-path="Sidebar.xcu"
+                       manifest:media-type="application/vnd.sun.star.configuration-data"/>
+  <manifest:file-entry manifest:full-path="Factories.xcu"
+                       manifest:media-type="application/vnd.sun.star.configuration-data"/>
   <manifest:file-entry manifest:full-path="MarkdownWriter.xcu"
                        manifest:media-type="application/vnd.sun.star.configuration-data"/>
 
@@ -38,6 +42,8 @@
   <manifest:file-entry manifest:full-path="pythonpath/mdwriter/md2html.py"
                        manifest:media-type="text/x-python"/>
   <manifest:file-entry manifest:full-path="pythonpath/mdwriter/preview.py"
+                       manifest:media-type="text/x-python"/>
+  <manifest:file-entry manifest:full-path="pythonpath/mdwriter/sidebar.py"
                        manifest:media-type="text/x-python"/>
 
 </manifest:manifest>
