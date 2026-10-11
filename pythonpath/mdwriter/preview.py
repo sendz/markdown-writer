@@ -23,18 +23,19 @@ from mdwriter import md2html
 HTML_FILTER = "HTML (StarWriter)"
 
 PUSHBUTTON_STANDARD = 0
-
-# dialog geometry (in 1/100 mm)
-DIALOG_W, DIALOG_H = 944, 560
-SRC_X, SRC_Y, SRC_W, SRC_H = 8, 8, 452, 500
-EXP_X, EXP_Y, EXP_W, EXP_H = 468, 8, 468, 500
-BTN_Y = 514
 POS_SIZE = 15  # X | Y | WIDTH | HEIGHT
+
+# Desired geometry in real pixels (scaled to the display DPI at runtime).
+DIALOG_PX_W, DIALOG_PX_H = 940, 600
+SRC_PX_X, SRC_PX_Y, SRC_PX_W, SRC_PX_H = 6, 6, 460, 520
+EXP_PX_X, EXP_PX_GAP = 474, 6
+BTN_PX_Y, BTN_PX_H = 534, 26
 
 PREVIEW_HTML = os.path.join(tempfile.gettempdir(), "mdwriter-preview.html")
 
 _editors = []
 _editor_busy = False
+_scale = None
 
 
 def _log(message):
@@ -161,7 +162,13 @@ def _embed_preview(ctx, dialog):
         uno.systemPathToFileUrl(path), "_blank", 0,
         (_prop("ParentWindow", dialog.getPeer()),))
     window = doc.getCurrentController().getFrame().getContainerWindow()
-    window.setPosSize(EXP_X, EXP_Y, EXP_W, EXP_H, POS_SIZE)
+    # The embedded window is positioned in pixels; size it from the dialog.
+    size = dialog.getPeer().getPosSize()
+    x, y = EXP_PX_X, SRC_PX_Y
+    width = max(120, size.Width - x - EXP_PX_GAP)
+    height = max(120, BTN_PX_Y - y - EXP_PX_GAP)
+    window.setPosSize(x, y, width, height, POS_SIZE)
+    _log("embed preview: dialog=%r preview=(%d,%d,%d,%d)" % (size, x, y, width, height))
     return doc, window
 
 
@@ -194,36 +201,73 @@ def _close_editor(dialog, preview_model):
             _editors.remove(entry)
 
 
+def _ui_scale(ctx, frame):
+    """Pixels per dialog-model unit (the model unit depends on the display DPI)."""
+    global _scale
+    if _scale is not None:
+        return _scale
+    smgr = ctx.ServiceManager
+    try:
+        probe_model = smgr.createInstanceWithContext(
+            "com.sun.star.awt.UnoControlDialogModel", ctx)
+        probe_model.setPropertyValue("Width", 100)
+        probe_model.setPropertyValue("Height", 100)
+        probe = smgr.createInstanceWithContext(
+            "com.sun.star.awt.UnoControlDialog", ctx)
+        probe.setModel(probe_model)
+        toolkit = smgr.createInstanceWithContext("com.sun.star.awt.Toolkit", ctx)
+        parent = frame.getContainerWindow() if frame is not None else None
+        probe.createPeer(toolkit, parent)
+        size = probe.getPeer().getPosSize()
+        probe.dispose()
+        _scale = (size.Width / 100.0, size.Height / 100.0)
+    except Exception as exc:
+        _log("scale probe failed: %r" % (exc,))
+        _scale = (1.0, 1.0)
+    return _scale
+
+
 def _build_source_dialog(ctx, frame, markdown_text):
     """Create the editor dialog. Returns (dialog, source_control)."""
     smgr = ctx.ServiceManager
+    sx, sy = _ui_scale(ctx, frame)
+
+    def mx(px):
+        return int(round(px / sx))
+
+    def my(px):
+        return int(round(px / sy))
+
     model_dialog = smgr.createInstanceWithContext(
         "com.sun.star.awt.UnoControlDialogModel", ctx)
     model_dialog.setPropertyValue("Title", "Markdown Editor")
-    model_dialog.setPropertyValue("Width", DIALOG_W)
-    model_dialog.setPropertyValue("Height", DIALOG_H)
-    model_dialog.setPropertyValue("PositionX", 80)
-    model_dialog.setPropertyValue("PositionY", 60)
+    model_dialog.setPropertyValue("Width", mx(DIALOG_PX_W))
+    model_dialog.setPropertyValue("Height", my(DIALOG_PX_H))
+    model_dialog.setPropertyValue("PositionX", mx(80))
+    model_dialog.setPropertyValue("PositionY", my(60))
 
     edit = model_dialog.createInstance("com.sun.star.awt.UnoControlEditModel")
-    _set(edit, Name="source", PositionX=SRC_X, PositionY=SRC_Y,
-         Width=SRC_W, Height=SRC_H, MultiLine=True, VScroll=True, HScroll=True,
-         Tabstop=True)
+    _set(edit, Name="source", PositionX=mx(SRC_PX_X), PositionY=my(SRC_PX_Y),
+         Width=mx(SRC_PX_W), Height=my(SRC_PX_H),
+         MultiLine=True, VScroll=True, HScroll=True, Tabstop=True)
     model_dialog.insertByName("source", edit)
 
     preview_btn = model_dialog.createInstance("com.sun.star.awt.UnoControlButtonModel")
-    _set(preview_btn, Name="preview", Label="Refresh Preview", PositionX=SRC_X,
-         PositionY=BTN_Y, Width=130, Height=24, PushButtonType=PUSHBUTTON_STANDARD)
+    _set(preview_btn, Name="preview", Label="Refresh Preview",
+         PositionX=mx(SRC_PX_X), PositionY=my(BTN_PX_Y),
+         Width=mx(130), Height=my(BTN_PX_H), PushButtonType=PUSHBUTTON_STANDARD)
     model_dialog.insertByName("preview", preview_btn)
 
     ok_btn = model_dialog.createInstance("com.sun.star.awt.UnoControlButtonModel")
-    _set(ok_btn, Name="apply", Label="Apply to Document", PositionX=250,
-         PositionY=BTN_Y, Width=150, Height=24, PushButtonType=PUSHBUTTON_STANDARD)
+    _set(ok_btn, Name="apply", Label="Apply to Document",
+         PositionX=mx(SRC_PX_X + 140), PositionY=my(BTN_PX_Y),
+         Width=mx(150), Height=my(BTN_PX_H), PushButtonType=PUSHBUTTON_STANDARD)
     model_dialog.insertByName("apply", ok_btn)
 
     close_btn = model_dialog.createInstance("com.sun.star.awt.UnoControlButtonModel")
-    _set(close_btn, Name="close", Label="Close", PositionX=408,
-         PositionY=BTN_Y, Width=52, Height=24, PushButtonType=PUSHBUTTON_STANDARD)
+    _set(close_btn, Name="close", Label="Close",
+         PositionX=mx(SRC_PX_X + 300), PositionY=my(BTN_PX_Y),
+         Width=mx(70), Height=my(BTN_PX_H), PushButtonType=PUSHBUTTON_STANDARD)
     model_dialog.insertByName("close", close_btn)
 
     dialog = smgr.createInstanceWithContext("com.sun.star.awt.UnoControlDialog", ctx)
