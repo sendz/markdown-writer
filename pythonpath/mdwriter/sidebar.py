@@ -161,41 +161,68 @@ class SidebarPanel(unohelper.Base, XServiceInfo, XToolPanel, XSidebarPanel):
         return size
 
     # ------------------------------------------------------------------ #
+    def _ui_scale(self):
+        try:
+            return preview._ui_scale(self.ctx, self.frame)
+        except Exception:
+            return (1.0, 1.0)
+
+    def _panel_size(self, parent):
+        try:
+            rect = parent.getPosSize()
+            return max(220, rect.Width), max(220, rect.Height)
+        except Exception:
+            return 260, 420
+
     def _build(self, parent):
         smgr = self.ctx.ServiceManager
+        sx, sy = self._ui_scale()
+        width_px, height_px = self._panel_size(parent)
+        margin = 4
+        btn_h = 26
+
+        def mx(px):
+            return int(round(px / sx))
+
+        def my(px):
+            return int(round(px / sy))
+
         model = smgr.createInstanceWithContext(
             "com.sun.star.awt.UnoControlDialogModel", self.ctx)
-        model.setPropertyValue("Width", 240)
-        model.setPropertyValue("Height", 380)
+        model.setPropertyValue("Width", mx(width_px))
+        model.setPropertyValue("Height", my(height_px))
 
         edit = model.createInstance("com.sun.star.awt.UnoControlEditModel")
         edit.setPropertyValue("Name", "source")
-        edit.setPropertyValue("PositionX", 4)
-        edit.setPropertyValue("PositionY", 4)
-        edit.setPropertyValue("Width", 232)
-        edit.setPropertyValue("Height", 340)
+        edit.setPropertyValue("PositionX", mx(margin))
+        edit.setPropertyValue("PositionY", my(margin))
+        edit.setPropertyValue("Width", mx(width_px - 2 * margin))
+        edit.setPropertyValue("Height", my(height_px - 3 * margin - btn_h))
         edit.setPropertyValue("MultiLine", True)
         edit.setPropertyValue("VScroll", True)
         edit.setPropertyValue("HScroll", True)
         edit.setPropertyValue("Tabstop", True)
         model.insertByName("source", edit)
 
+        btn_w = (width_px - 3 * margin) // 2
+        btn_y = height_px - margin - btn_h
+
         apply_btn = model.createInstance("com.sun.star.awt.UnoControlButtonModel")
         apply_btn.setPropertyValue("Name", "apply")
         apply_btn.setPropertyValue("Label", "Apply")
-        apply_btn.setPropertyValue("PositionX", 4)
-        apply_btn.setPropertyValue("PositionY", 350)
-        apply_btn.setPropertyValue("Width", 110)
-        apply_btn.setPropertyValue("Height", 24)
+        apply_btn.setPropertyValue("PositionX", mx(margin))
+        apply_btn.setPropertyValue("PositionY", my(btn_y))
+        apply_btn.setPropertyValue("Width", mx(btn_w))
+        apply_btn.setPropertyValue("Height", my(btn_h))
         model.insertByName("apply", apply_btn)
 
         reload_btn = model.createInstance("com.sun.star.awt.UnoControlButtonModel")
         reload_btn.setPropertyValue("Name", "reload")
         reload_btn.setPropertyValue("Label", "Reload")
-        reload_btn.setPropertyValue("PositionX", 126)
-        reload_btn.setPropertyValue("PositionY", 350)
-        reload_btn.setPropertyValue("Width", 110)
-        reload_btn.setPropertyValue("Height", 24)
+        reload_btn.setPropertyValue("PositionX", mx(margin * 2 + btn_w))
+        reload_btn.setPropertyValue("PositionY", my(btn_y))
+        reload_btn.setPropertyValue("Width", mx(btn_w))
+        reload_btn.setPropertyValue("Height", my(btn_h))
         model.insertByName("reload", reload_btn)
 
         self.dialog = smgr.createInstanceWithContext(
@@ -205,6 +232,8 @@ class SidebarPanel(unohelper.Base, XServiceInfo, XToolPanel, XSidebarPanel):
             toolkit = smgr.createInstanceWithContext(
                 "com.sun.star.awt.Toolkit", self.ctx)
             self.dialog.createPeer(toolkit, parent)
+            self.dialog.setPosSize(0, 0, width_px, height_px, 15)
+            self.dialog.setVisible(True)
         except Exception as exc:
             _log("panel createPeer failed: %r" % (exc,))
 
