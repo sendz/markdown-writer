@@ -35,21 +35,15 @@ LibreOffice** after (re)installing for changes to take effect.
 
 ## Usage
 
-After installing and restarting Writer, open the new **Markdown** menu. It is
-deliberately small: **Live Markdown** (check box), **Open Markdown File…**,
-**Edit Markdown Source…**, **Save as Markdown…**, and **About Markdown Writer**
-at the bottom. Basic formatting is done by typing Markdown syntax (live mode)
-or via the toolbar / keyboard shortcuts.
+After installing and restarting Writer, open the new **Markdown** menu:
 
-### Formatting commands
+- **Live Markdown** (check box) — auto-format Markdown as you type.
+- **Open Markdown File…** — open a `.md` file as a Writer document.
+- **Edit Markdown Source…** — edit the raw Markdown in a dialog with a preview.
+- **Save as Markdown…** — save the document as `.md`.
+- **About Markdown Writer**.
 
-Available from the **Markdown** toolbar and the keyboard shortcuts below
-(they are intentionally not in the menu):
-
-- **Bold**, **Italic**, **Strikethrough**, **Inline Code**
-- **Heading 1** … **Heading 6**, **Body Text**
-- **Bullet List**, **Numbered List**, **Block Quote**, **Code Block**
-- **Horizontal Rule**, **Insert Link…**, **Insert Table**
+Basic formatting is done by typing Markdown syntax (with Live Markdown enabled).
 
 ### Import / export
 
@@ -58,16 +52,10 @@ Available from the **Markdown** toolbar and the keyboard shortcuts below
 
 ### Keyboard shortcuts
 
-All commands also have `Ctrl+Alt+<key>` shortcuts (chosen to avoid clashing
-with built-in Writer shortcuts):
-
-| Shortcut | Action | | Shortcut | Action |
-|---|---|---|---|---|
-| `Ctrl+Alt+C` | Inline code | | `Ctrl+Alt+B` | Bullet list |
-| `Ctrl+Alt+F` | Code block | | `Ctrl+Alt+N` | Numbered list |
-| `Ctrl+Alt+Q` | Block quote | | `Ctrl+Alt+R` | Horizontal rule |
-| `Ctrl+Alt+X` | Strikethrough | | `Ctrl+Alt+K` | Insert link |
-| `Ctrl+Alt+P` | Preview | | `Ctrl+Alt+M` | Markdown editor |
+| Shortcut | Action |
+|---|---|
+| `Ctrl+Alt+P` | Preview Markdown |
+| `Ctrl+Alt+M` | Markdown editor |
 
 ### Preview and source editing
 

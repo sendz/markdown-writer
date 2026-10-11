@@ -15,16 +15,12 @@ PACKAGE_ITEMS=(
     description
     description.xml
     Addons.xcu
-    Icons.xcu
     Shortcuts.xcu
     ProtocolHandler.xcu
     MarkdownWriter.xcu
     mdwriter.py
     pythonpath
 )
-
-# Regenerate the toolbar icons / image set so they stay in sync.
-python3 tools/make_icons.py >/dev/null
 
 # Every full-path declared in the manifest must exist, otherwise the extension
 # installs but silently ignores missing files.

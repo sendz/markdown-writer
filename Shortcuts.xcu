@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Keyboard shortcuts for the Markdown Writer commands in Writer.
+  Keyboard shortcuts for the remaining Markdown Writer commands.
 
   Ctrl+Alt+<key> combinations were chosen to avoid clashing with the built-in
-  Writer shortcuts (e.g. Ctrl+B/I/U, Ctrl+1..3 which are already headings).
-  MOD1 = Ctrl, MOD2 = Alt on Linux/Windows.
+  Writer shortcuts (MOD1 = Ctrl, MOD2 = Alt on Linux/Windows).
 -->
 <oor:component-data xmlns:oor="http://openoffice.org/2001/registry"
                     xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -14,54 +13,6 @@
   <node oor:name="PrimaryKeys">
     <node oor:name="Modules">
       <node oor:name="com.sun.star.text.TextDocument" oor:op="fuse">
-
-        <node oor:name="C_MOD1_MOD2" oor:op="replace">
-          <prop oor:name="Command" oor:type="xs:string">
-            <value>org.sendyyeah.mdwriter:code</value>
-          </prop>
-        </node>
-
-        <node oor:name="F_MOD1_MOD2" oor:op="replace">
-          <prop oor:name="Command" oor:type="xs:string">
-            <value>org.sendyyeah.mdwriter:codeblock</value>
-          </prop>
-        </node>
-
-        <node oor:name="Q_MOD1_MOD2" oor:op="replace">
-          <prop oor:name="Command" oor:type="xs:string">
-            <value>org.sendyyeah.mdwriter:quote</value>
-          </prop>
-        </node>
-
-        <node oor:name="X_MOD1_MOD2" oor:op="replace">
-          <prop oor:name="Command" oor:type="xs:string">
-            <value>org.sendyyeah.mdwriter:strike</value>
-          </prop>
-        </node>
-
-        <node oor:name="B_MOD1_MOD2" oor:op="replace">
-          <prop oor:name="Command" oor:type="xs:string">
-            <value>org.sendyyeah.mdwriter:bullet</value>
-          </prop>
-        </node>
-
-        <node oor:name="N_MOD1_MOD2" oor:op="replace">
-          <prop oor:name="Command" oor:type="xs:string">
-            <value>org.sendyyeah.mdwriter:number</value>
-          </prop>
-        </node>
-
-        <node oor:name="R_MOD1_MOD2" oor:op="replace">
-          <prop oor:name="Command" oor:type="xs:string">
-            <value>org.sendyyeah.mdwriter:hr</value>
-          </prop>
-        </node>
-
-        <node oor:name="K_MOD1_MOD2" oor:op="replace">
-          <prop oor:name="Command" oor:type="xs:string">
-            <value>org.sendyyeah.mdwriter:link</value>
-          </prop>
-        </node>
 
         <node oor:name="P_MOD1_MOD2" oor:op="replace">
           <prop oor:name="Command" oor:type="xs:string">
