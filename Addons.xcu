@@ -197,6 +197,39 @@
             </prop>
           </node>
 
+          <node oor:name="m_sep_file" oor:op="replace">
+            <prop oor:name="Context" oor:type="xs:string">
+              <value>separator</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_openmd" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=openmd</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Open Markdown File…</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_exportmd" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=exportmd</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Export as Markdown…</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_saveasmd" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=saveasmd</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Save as Markdown…</value>
+            </prop>
+          </node>
+
           <node oor:name="m_sep4" oor:op="replace">
             <prop oor:name="Context" oor:type="xs:string">
               <value>separator</value>

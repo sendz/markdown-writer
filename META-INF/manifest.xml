@@ -29,5 +29,7 @@
                        manifest:media-type="text/x-python"/>
   <manifest:file-entry manifest:full-path="pythonpath/mdwriter/markdown.py"
                        manifest:media-type="text/x-python"/>
+  <manifest:file-entry manifest:full-path="pythonpath/mdwriter/exporter.py"
+                       manifest:media-type="text/x-python"/>
 
 </manifest:manifest>

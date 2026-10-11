@@ -12,7 +12,7 @@ Markdown while working in Writer.
 | M0        | Extension scaffold, build/install scripts, About box | done  |
 | M1        | Formatting commands (bold, headings, lists, ...)     | done  |
 | M2        | Live auto-format while typing (Typora-like)          | done  |
-| M3        | Markdown import/export helpers                       | todo  |
+| M3        | Markdown import/export helpers                       | done  |
 | M4        | Source + preview panel                               | todo  |
 | M5        | Polish, docs, tests                                  | todo  |
 
@@ -45,6 +45,14 @@ Apply Markdown semantics to the current selection or paragraph:
 - **Heading 1** … **Heading 6**, **Body Text**
 - **Bullet List**, **Numbered List**, **Block Quote**, **Code Block**
 - **Horizontal Rule**, **Insert Link…**, **Insert Table**
+
+### Import / export
+
+- **Open Markdown File…** — open a `.md` file as a Writer document.
+- **Export as Markdown…** — write the current document to a `.md` file
+  (the open document is left untouched).
+- **Save as Markdown…** — save the current document as `.md` (switches the
+  document to the Markdown filter).
 
 ### Live Markdown (Typora-like)
 

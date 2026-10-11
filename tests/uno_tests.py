@@ -138,10 +138,51 @@ def test_formatter(ctx):
     doc.close(False)
 
 
+def test_export_import(ctx):
+    from mdwriter import exporter
+    import tempfile
+
+    desktop = ctx.ServiceManager.createInstanceWithContext(
+        "com.sun.star.frame.Desktop", ctx)
+
+    print("== export ==")
+    doc = desktop.loadComponentFromURL("private:factory/swriter", "_blank", 0, ())
+    text = doc.getText()
+    cur = text.createTextCursor()
+    text.insertString(cur, "Title", False)
+    cur.setPropertyValue("ParaStyleName", "Heading 1")
+    text.insertControlCharacter(cur, uno.getConstantByName(
+        "com.sun.star.text.ControlCharacter.PARAGRAPH_BREAK"), False)
+    text.insertString(cur, "Some ", False)
+    text.insertString(cur, "bold", False)
+    cur.goLeft(4, True)
+    cur.setPropertyValue("CharWeight", 150.0)
+
+    md_file = tempfile.mktemp(suffix=".md", dir="/tmp")
+    exporter.export_markdown(doc, uno.systemPathToFileUrl(md_file))
+    doc.close(False)
+
+    with open(md_file, encoding="utf-8") as handle:
+        content = handle.read()
+    check("exported heading", "# Title" in content)
+    check("exported bold", "**bold**" in content)
+
+    print("== import ==")
+    doc2 = exporter.load_markdown(ctx, uno.systemPathToFileUrl(md_file))
+    c = doc2.getText().createTextCursor()
+    c.gotoStart(False)
+    c.gotoEndOfParagraph(True)
+    check("imported heading text", c.getString() == "Title")
+    check("imported heading style",
+          c.getPropertyValue("ParaStyleName") == "Heading 1")
+    doc2.close(False)
+
+
 def main():
     ctx = connect()
     test_registration(ctx)
     test_formatter(ctx)
+    test_export_import(ctx)
     print()
     if FAILURES:
         print("RESULT: %d FAILURE(S): %s" % (len(FAILURES), ", ".join(FAILURES)))
