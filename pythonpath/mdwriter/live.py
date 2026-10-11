@@ -136,7 +136,25 @@ def _apply_marker(model, text, paragraph, content):
     _log("  inline: %r -> %r" % (content, plain))
     paragraph.setString(plain)
     _apply_spans(text, _paragraph_cursor(model), spans)
+    _reset_typing_attributes(model)
     return True
+
+
+def _reset_typing_attributes(model):
+    """Clear the cursor's character state so following text is unformatted.
+
+    Setting a character attribute leaves it active for subsequent typing, so
+    after converting e.g. **bold** the user would keep typing in bold.
+    """
+    try:
+        cursor = model.getCurrentController().getViewCursor()
+        cursor.setPropertyValue("CharWeight", formatter.NORMAL_WEIGHT)
+        cursor.setPropertyValue(
+            "CharPosture", uno.Enum("com.sun.star.awt.FontSlant", "NONE"))
+        cursor.setPropertyValue("CharStrikeout", 0)
+        cursor.setPropertyValue("CharStyleName", formatter.CHAR_STANDARD_STYLE)
+    except Exception as exc:
+        _log("reset typing attributes failed: %r" % (exc,))
 
 
 def _lock_actions(model):
