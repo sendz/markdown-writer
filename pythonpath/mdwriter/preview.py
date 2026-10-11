@@ -14,7 +14,12 @@ import tempfile
 import uno
 import unohelper
 
-from com.sun.star.awt import XActionListener, XTextListener, XFocusListener
+from com.sun.star.awt import (
+    XActionListener,
+    XTextListener,
+    XFocusListener,
+    XTopWindowListener,
+)
 from com.sun.star.beans import PropertyValue
 
 from mdwriter import exporter
@@ -126,6 +131,37 @@ class _FocusListener(unohelper.Base, XFocusListener):
         pass
 
 
+class _TopWindowListener(unohelper.Base, XTopWindowListener):
+
+    def __init__(self, callback):
+        self.callback = callback
+
+    def windowOpened(self, event):
+        pass
+
+    def windowClosing(self, event):
+        # Fired by the dialog's (X) button.
+        self.callback()
+
+    def windowClosed(self, event):
+        pass
+
+    def windowMinimized(self, event):
+        pass
+
+    def windowNormalized(self, event):
+        pass
+
+    def windowActivated(self, event):
+        pass
+
+    def windowDeactivated(self, event):
+        pass
+
+    def disposing(self, source):
+        pass
+
+
 # ---------------------------------------------------------------------- #
 # Single-window editor
 # ---------------------------------------------------------------------- #
@@ -190,6 +226,7 @@ def edit_source(ctx, model, frame):
     dialog.getControl("preview").addActionListener(_ActionListener(refresh))
     dialog.getControl("apply").addActionListener(_ActionListener(apply))
     dialog.getControl("close").addActionListener(_ActionListener(close))
+    dialog.addTopWindowListener(_TopWindowListener(close))
 
     _editors.append((dialog, preview_model))
     dialog.setVisible(True)
