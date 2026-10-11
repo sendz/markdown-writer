@@ -202,23 +202,12 @@ def _current_frame(ctx):
 
 
 def refresh_indicator(ctx):
-    """Show or hide the status bar indicator reflecting Live mode."""
-    global _indicator
-    frame = _current_frame(ctx)
-    if frame is None:
-        return
-    try:
-        if LIVE_ENABLED:
-            if _indicator is None:
-                _indicator = frame.createStatusIndicator()
-                _indicator.start("Markdown: Live", 100)
-        else:
-            if _indicator is not None:
-                _indicator.end()
-                _indicator = None
-    except Exception as exc:
-        _log("status indicator failed: %r" % (exc,))
-        _indicator = None
+    """Status bar indicator reflecting Live mode.
+
+    Disabled: the GTK3 VCL plugin can crash (std::out_of_range in a string
+    helper) while updating status-bar widgets, so we do not create one.
+    """
+    return
 
 
 # ---------------------------------------------------------------------- #
