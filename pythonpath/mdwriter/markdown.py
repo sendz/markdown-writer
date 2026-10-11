@@ -54,16 +54,22 @@ def split_inline(text):
             if not text.startswith(opener, position):
                 continue
             close_at = text.find(closer, position + len(opener))
-            if close_at == -1:
-                continue
-            content = text[position + len(opener):close_at]
-            if not content:
-                continue
-            start = current_index()
-            out.append(content)
-            spans.append((start, start + len(content), kind, None))
-            position = close_at + len(closer)
-            break
+            if close_at != -1 and close_at > position + len(opener):
+                content = text[position + len(opener):close_at]
+                start = current_index()
+                out.append(content)
+                spans.append((start, start + len(content), kind, None))
+                position = close_at + len(closer)
+                break
+            # No valid closer for this opener.  If the opener is more than one
+            # character long (e.g. "**"), consume it literally instead of
+            # falling back to a shorter opener (the single "*") at the same
+            # position - otherwise a partially typed "**bold*" would be parsed
+            # as italic.
+            if len(opener) > 1:
+                out.append(opener)
+                position += len(opener)
+                break
         else:
             out.append(text[position])
             position += 1
