@@ -178,6 +178,36 @@ def test_export_import(ctx):
     doc2.close(False)
 
 
+def test_dispatch_command(ctx):
+    """Commands must work through the Dispatch component (frame propagation)."""
+    print("== dispatch command (frame propagation) ==")
+    desktop = ctx.ServiceManager.createInstanceWithContext(
+        "com.sun.star.frame.Desktop", ctx)
+    doc = desktop.loadComponentFromURL("private:factory/swriter", "_blank", 0, ())
+    text = doc.getText()
+    cur = text.createTextCursor()
+    text.insertString(cur, "Hello", False)
+    controller = doc.getCurrentController()
+    vc = controller.getViewCursor()
+    vc.gotoStart(False)
+    vc.goRight(5, True)
+
+    provider = ctx.ServiceManager.createInstanceWithContext(
+        "com.sendyyeah.mdwriter.Dispatch", ctx)
+    provider.initialize((desktop.getCurrentFrame(),))
+    url = uno.createUnoStruct("com.sun.star.util.URL")
+    url.Protocol = "service:"
+    url.Complete = "service:com.sendyyeah.mdwriter.Dispatch?command=bold"
+    provider.queryDispatch(url, "_self", 0).dispatch(url, ())
+
+    check_cursor = text.createTextCursor()
+    check_cursor.gotoStart(False)
+    check_cursor.goRight(5, False)
+    check("bold applied through dispatch",
+          float(check_cursor.getPropertyValue("CharWeight")) >= 149)
+    doc.close(False)
+
+
 def test_preview(ctx):
     from mdwriter import preview
 
@@ -223,6 +253,7 @@ def main():
     test_registration(ctx)
     test_formatter(ctx)
     test_export_import(ctx)
+    test_dispatch_command(ctx)
     test_preview(ctx)
     print()
     if FAILURES:

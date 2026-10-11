@@ -20,6 +20,17 @@ from com.sun.star.beans import PropertyValue
 from mdwriter import exporter
 from mdwriter import md2html
 
+
+def _log(message):
+    path = os.environ.get("MARKDOWN_WRITER_DEBUG_LOG")
+    if not path:
+        return
+    try:
+        with open(path, "a", encoding="utf-8") as handle:
+            handle.write(message + "\n")
+    except Exception:
+        pass
+
 HTML_FILTER = "HTML (StarWriter)"
 
 # com.sun.star.awt.PushButtonType
@@ -88,14 +99,19 @@ class _ActionListener(unohelper.Base, XActionListener):
 def edit_source(ctx, model, frame):
     """Open a dialog to edit the document's Markdown source."""
     md_path = os.path.join(tempfile.gettempdir(), "mdwriter-source.md")
+    _log("edit_source: exporting to markdown")
     markdown_text = document_to_markdown(model, md_path)
-
+    _log("edit_source: building dialog (frame=%r)" % (frame,))
     dialog, control = _build_source_dialog(ctx, frame, markdown_text)
+    _log("edit_source: dialog built, wiring preview")
     _wire_preview_button(ctx, dialog, control)
+    _log("edit_source: executing dialog")
     try:
         if dialog.execute() == DIALOG_OK:
+            _log("edit_source: apply")
             _apply_source(ctx, model, control.getText())
     finally:
+        _log("edit_source: disposing")
         dialog.dispose()
 
 

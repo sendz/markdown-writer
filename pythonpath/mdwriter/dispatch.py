@@ -64,7 +64,10 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
     # ------------------------------------------------------------------ #
     def initialize(self, args):
         """Called by the frame with the frame itself as the only argument."""
-        if args and isinstance(args[0], XFrame):
+        # Do not isinstance-check against XFrame: pyuno's interface isinstance
+        # is unreliable for UNO objects. The ProtocolHandler contract says the
+        # first argument is the frame.
+        if args:
             self.frame = args[0]
 
     # ------------------------------------------------------------------ #
@@ -121,12 +124,24 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
 
     def _model(self):
         """Return the current document model, or None if there is no document."""
-        if self.frame is None:
+        frame = self._frame()
+        if frame is None:
             return None
-        controller = self.frame.getController()
+        controller = frame.getController()
         if controller is None:
             return None
         return controller.getModel()
+
+    def _frame(self):
+        """Return the frame for this dispatch, falling back to the active one."""
+        if self.frame is not None:
+            return self.frame
+        try:
+            desktop = self.ctx.ServiceManager.createInstanceWithContext(
+                "com.sun.star.frame.Desktop", self.ctx)
+            return desktop.getCurrentFrame()
+        except Exception:
+            return None
 
     # ------------------------------------------------------------------ #
     # Commands
@@ -211,7 +226,7 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
 
     def _cmd_openmd(self):
         try:
-            exporter.open_dialog(self.ctx, self.frame)
+            exporter.open_dialog(self.ctx, self._frame())
         except Exception as exc:
             self._error("Could not open Markdown file: %s" % exc)
 
@@ -250,13 +265,16 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
             self._error("Could not render preview: %s" % exc)
 
     def _cmd_source(self):
+        preview._log("_cmd_source: frame=%r" % (self.frame,))
         model = self._model()
+        preview._log("_cmd_source: model=%r writer=%s" % (model, formatter.is_writer(model)))
         if not formatter.is_writer(model):
             self._error("This command only works in a Writer document.")
             return
         try:
-            preview.edit_source(self.ctx, model, self.frame)
+            preview.edit_source(self.ctx, model, self._frame())
         except Exception as exc:
+            preview._log("_cmd_source error: %r" % (exc,))
             self._error("Could not open source editor: %s" % exc)
 
     def _cmd_togglelive(self):
