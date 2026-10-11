@@ -1,0 +1,9 @@
+Write Markdown directly inside LibreOffice Writer.
+
+Requires LibreOffice 7.0 or newer (developed against LibreOffice 26.8).
+
+Markdown Writer adds a "Markdown" menu to Writer with commands to apply
+Markdown formatting to your text, live auto-formatting while you type,
+Markdown import/export helpers and a source + preview panel.
+
+Homepage: https://github.com/sendyyeah/markdown-writer

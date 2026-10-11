@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest:manifest xmlns:manifest="http://openoffice.org/2001/manifest">
+
+  <manifest:file-entry manifest:full-path="/"
+                       manifest:media-type="application/vnd.sun.star.package-bundle"/>
+
+  <manifest:file-entry manifest:full-path="description.xml"
+                       manifest:media-type="application/vnd.sun.star.package-bundle-description"/>
+  <manifest:file-entry manifest:full-path="description/description.txt"
+                       manifest:media-type="text/plain"/>
+
+  <manifest:file-entry manifest:full-path="Addons.xcu"
+                       manifest:media-type="application/vnd.sun.star.configuration-data"/>
+
+  <!-- Python UNO component: the loader reads g_ImplementationHelper from this file. -->
+  <manifest:file-entry manifest:full-path="mdwriter.py"
+                       manifest:media-type="application/vnd.sun.star.uno-component;type=Python"/>
+
+  <!-- Helper modules. The folder next to the component file is added to sys.path. -->
+  <manifest:file-entry manifest:full-path="pythonpath/mdwriter/__init__.py"
+                       manifest:media-type="text/x-python"/>
+  <manifest:file-entry manifest:full-path="pythonpath/mdwriter/dispatch.py"
+                       manifest:media-type="text/x-python"/>
+
+</manifest:manifest>
