@@ -12,6 +12,7 @@ STATUS=0
 
 echo "### pure unit tests ###"
 python3 "$ROOT/tests/test_live_text.py" || STATUS=1
+python3 "$ROOT/tests/test_md2html.py" || STATUS=1
 
 if pgrep -x soffice.bin >/dev/null 2>&1 || pgrep -x soffice >/dev/null 2>&1; then
     echo "ERROR: LibreOffice is already running. Close it before testing."

@@ -31,5 +31,9 @@
                        manifest:media-type="text/x-python"/>
   <manifest:file-entry manifest:full-path="pythonpath/mdwriter/exporter.py"
                        manifest:media-type="text/x-python"/>
+  <manifest:file-entry manifest:full-path="pythonpath/mdwriter/md2html.py"
+                       manifest:media-type="text/x-python"/>
+  <manifest:file-entry manifest:full-path="pythonpath/mdwriter/preview.py"
+                       manifest:media-type="text/x-python"/>
 
 </manifest:manifest>

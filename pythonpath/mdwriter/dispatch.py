@@ -18,6 +18,7 @@ from com.sun.star.awt import MessageBoxButtons
 from mdwriter import formatter
 from mdwriter import live
 from mdwriter import exporter
+from mdwriter import preview
 
 IMPLE_NAME = "com.sendyyeah.mdwriter.Dispatch"
 SERVICE_NAMES = ("com.sun.star.frame.ProtocolHandler",)
@@ -237,6 +238,26 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
             model.storeAsURL(url, (exporter._prop("FilterName", exporter.MARKDOWN_FILTER),))
         except Exception as exc:
             self._error("Could not save as Markdown: %s" % exc)
+
+    def _cmd_preview(self):
+        model = self._model()
+        if not formatter.is_writer(model):
+            self._error("This command only works in a Writer document.")
+            return
+        try:
+            preview.preview(self.ctx, model)
+        except Exception as exc:
+            self._error("Could not render preview: %s" % exc)
+
+    def _cmd_source(self):
+        model = self._model()
+        if not formatter.is_writer(model):
+            self._error("This command only works in a Writer document.")
+            return
+        try:
+            preview.edit_source(self.ctx, model, self.frame)
+        except Exception as exc:
+            self._error("Could not open source editor: %s" % exc)
 
     def _cmd_togglelive(self):
         live.LIVE_ENABLED = not live.LIVE_ENABLED

@@ -230,6 +230,24 @@
             </prop>
           </node>
 
+          <node oor:name="m_preview" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=preview</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Preview Markdown</value>
+            </prop>
+          </node>
+
+          <node oor:name="m_source" oor:op="replace">
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>service:com.sendyyeah.mdwriter.Dispatch?command=source</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value xml:lang="en-US">Edit Markdown Source…</value>
+            </prop>
+          </node>
+
           <node oor:name="m_sep4" oor:op="replace">
             <prop oor:name="Context" oor:type="xs:string">
               <value>separator</value>

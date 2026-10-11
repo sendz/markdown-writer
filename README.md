@@ -13,7 +13,7 @@ Markdown while working in Writer.
 | M1        | Formatting commands (bold, headings, lists, ...)     | done  |
 | M2        | Live auto-format while typing (Typora-like)          | done  |
 | M3        | Markdown import/export helpers                       | done  |
-| M4        | Source + preview panel                               | todo  |
+| M4        | Source + preview panel                               | done  |
 | M5        | Polish, docs, tests                                  | todo  |
 
 ## Requirements
@@ -53,6 +53,15 @@ Apply Markdown semantics to the current selection or paragraph:
   (the open document is left untouched).
 - **Save as Markdown…** — save the current document as `.md` (switches the
   document to the Markdown filter).
+
+### Preview and source editing
+
+- **Preview Markdown** — renders the current document as HTML in a separate
+  window (a read-only preview you can place next to the editor).
+- **Edit Markdown Source…** — opens a dialog with the document's raw Markdown
+  for editing, with **Preview** (render in a window) and **Apply to Document**
+  (replace the current document with the edited Markdown, rendered through the
+  built-in Markdown filter).
 
 ### Live Markdown (Typora-like)
 

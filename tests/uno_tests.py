@@ -178,11 +178,42 @@ def test_export_import(ctx):
     doc2.close(False)
 
 
+def test_preview(ctx):
+    from mdwriter import preview
+
+    desktop = ctx.ServiceManager.createInstanceWithContext(
+        "com.sun.star.frame.Desktop", ctx)
+    doc = desktop.loadComponentFromURL("private:factory/swriter", "_blank", 0, ())
+    text = doc.getText()
+    cur = text.createTextCursor()
+    text.insertString(cur, "Heading", False)
+    cur.setPropertyValue("ParaStyleName", "Heading 1")
+
+    print("== preview rendering ==")
+    md = preview.document_to_markdown(doc, "/tmp/mdwriter-test-preview.md")
+    check("document rendered to markdown", "# Heading" in md)
+    html_path = preview.markdown_to_html_file(md, "/tmp/mdwriter-test-preview.html")
+    with open(html_path, encoding="utf-8") as handle:
+        html_text = handle.read()
+    check("markdown rendered to html", "<h1>Heading</h1>" in html_text)
+
+    print("== apply source to document ==")
+    preview._apply_source(ctx, doc, "# New Title\n\nSome **bold** text.")
+    c = text.createTextCursor()
+    c.gotoStart(False)
+    c.gotoEndOfParagraph(True)
+    check("applied heading text", c.getString() == "New Title")
+    check("applied heading style",
+          c.getPropertyValue("ParaStyleName") == "Heading 1")
+    doc.close(False)
+
+
 def main():
     ctx = connect()
     test_registration(ctx)
     test_formatter(ctx)
     test_export_import(ctx)
+    test_preview(ctx)
     print()
     if FAILURES:
         print("RESULT: %d FAILURE(S): %s" % (len(FAILURES), ", ".join(FAILURES)))
