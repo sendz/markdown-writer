@@ -254,9 +254,8 @@ def test_preview(ctx):
     dialog, control = preview._build_source_dialog(ctx, None, "# Source\n\n**bold**")
     check("dialog shows the source text",
           control.getText() == "# Source\n\n**bold**")
-    check("dialog has preview, apply and close buttons",
-          dialog.getControl("preview") is not None
-          and dialog.getControl("apply") is not None
+    check("dialog has apply and close buttons",
+          dialog.getControl("apply") is not None
           and dialog.getControl("close") is not None)
     dialog.dispose()
     doc.close(False)
