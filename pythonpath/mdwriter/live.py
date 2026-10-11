@@ -41,6 +41,12 @@ NUMBER_STYLE = "Numbering 123"
 
 DEBUG_LOG = os.environ.get("MARKDOWN_WRITER_DEBUG_LOG")
 
+# Block conversion (headings, lists, quote, code fence) changes paragraph
+# styles, which triggers the UI update that crashes some LibreOffice GTK3
+# builds. Set MARKDOWN_WRITER_LIVE_BLOCKS=0 to disable it (inline markers keep
+# working).
+LIVE_BLOCKS = os.environ.get("MARKDOWN_WRITER_LIVE_BLOCKS", "1") != "0"
+
 
 def _log(message):
     if not DEBUG_LOG:
@@ -58,10 +64,11 @@ def _log(message):
 def reformat(ctx, model):
     """Reformat the paragraph at the cursor. Returns True if anything changed.
 
-    Everything is done with text cursors and paragraph properties.  The view
-    cursor and ``.uno:`` dispatches are deliberately avoided: editing the
-    document from inside a modify notification while the view is updating can
-    crash the office.
+    Everything is done with text cursors and paragraph properties, inside a
+    frame action lock.  Modifying the document from inside a modify
+    notification triggers UI updates; without the lock those updates can
+    re-enter and crash the office (seen as std::out_of_range in the GTK3 VCL
+    plugin).
     """
     if not formatter.is_writer(model):
         return False
@@ -75,9 +82,17 @@ def reformat(ctx, model):
         return False
     _log("reformat content=%r" % (content,))
 
+    frame = _lock_actions(model)
+    try:
+        return _apply_marker(model, text, paragraph, content)
+    finally:
+        _unlock_actions(frame)
+
+
+def _apply_marker(model, text, paragraph, content):
     # --- block markers ------------------------------------------------ #
     match = HEADING_RE.match(content)
-    if match:
+    if LIVE_BLOCKS and match:
         _log("  heading %d: delete %d chars" % (
             len(match.group(1)), len(match.group(0)) - len(match.group(2))))
         _delete_prefix(text, paragraph, len(match.group(0)) - len(match.group(2)))
@@ -85,28 +100,28 @@ def reformat(ctx, model):
         _set_paragraph_style(model, "Heading %d" % len(match.group(1)))
         return True
 
-    if FENCE_RE.match(content.strip()):
+    if LIVE_BLOCKS and FENCE_RE.match(content.strip()):
         _log("  fence: clear + preformatted")
         _clear_paragraph(text, paragraph)
         _set_paragraph_style(model, formatter.CODE_BLOCK_STYLE)
         return True
 
     match = QUOTE_RE.match(content)
-    if match:
+    if LIVE_BLOCKS and match:
         _log("  quote: delete prefix")
         _delete_prefix(text, paragraph, len(content) - len(match.group(1)))
         _set_paragraph_style(model, formatter.QUOTE_STYLE)
         return True
 
     match = BULLET_RE.match(content)
-    if match:
+    if LIVE_BLOCKS and match:
         _log("  bullet: delete prefix + %s" % BULLET_STYLE)
         _delete_prefix(text, paragraph, len(content) - len(match.group(1)))
         _set_paragraph_numbering(model, BULLET_STYLE)
         return True
 
     match = NUMBER_RE.match(content)
-    if match:
+    if LIVE_BLOCKS and match:
         _log("  number: delete prefix + %s" % NUMBER_STYLE)
         _delete_prefix(text, paragraph, len(content) - len(match.group(1)))
         _set_paragraph_numbering(model, NUMBER_STYLE)
@@ -121,6 +136,25 @@ def reformat(ctx, model):
     paragraph.setString(plain)
     _apply_spans(text, _paragraph_cursor(model), spans)
     return True
+
+
+def _lock_actions(model):
+    """Lock frame actions so our edit is applied as one batch."""
+    try:
+        frame = model.getCurrentController().getFrame()
+        frame.lock()
+        return frame
+    except Exception:
+        return None
+
+
+def _unlock_actions(frame):
+    if frame is None:
+        return
+    try:
+        frame.unlock()
+    except Exception:
+        pass
 
 
 def _view_cursor(model):
