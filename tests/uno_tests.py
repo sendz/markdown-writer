@@ -193,12 +193,11 @@ def test_dispatch_command(ctx):
     vc.goRight(5, True)
 
     url = uno.createUnoStruct("com.sun.star.util.URL")
-    url.Protocol = "service:"
-    url.Complete = "service:com.sendyyeah.mdwriter.Dispatch?command=bold"
+    url.Protocol = "org.sendyyeah.mdwriter"
+    url.Complete = "org.sendyyeah.mdwriter:bold"
 
     # This is exactly what the menu/toolbar does: ask the frame, which routes
-    # "service:" URLs through com.sun.star.comp.framework.ServiceHandler, which
-    # creates the component and calls XJobExecutor.trigger().
+    # our custom URL scheme to the extension's protocol handler.
     dispatch = desktop.getCurrentFrame().queryDispatch(url, "_self", 0)
     check("frame resolves the command", dispatch is not None)
     dispatch.dispatch(url, ())

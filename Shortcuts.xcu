@@ -17,61 +17,61 @@
 
         <node oor:name="C_MOD1_MOD2" oor:op="replace">
           <prop oor:name="Command" oor:type="xs:string">
-            <value>service:com.sendyyeah.mdwriter.Dispatch?command=code</value>
+            <value>org.sendyyeah.mdwriter:code</value>
           </prop>
         </node>
 
         <node oor:name="F_MOD1_MOD2" oor:op="replace">
           <prop oor:name="Command" oor:type="xs:string">
-            <value>service:com.sendyyeah.mdwriter.Dispatch?command=codeblock</value>
+            <value>org.sendyyeah.mdwriter:codeblock</value>
           </prop>
         </node>
 
         <node oor:name="Q_MOD1_MOD2" oor:op="replace">
           <prop oor:name="Command" oor:type="xs:string">
-            <value>service:com.sendyyeah.mdwriter.Dispatch?command=quote</value>
+            <value>org.sendyyeah.mdwriter:quote</value>
           </prop>
         </node>
 
         <node oor:name="X_MOD1_MOD2" oor:op="replace">
           <prop oor:name="Command" oor:type="xs:string">
-            <value>service:com.sendyyeah.mdwriter.Dispatch?command=strike</value>
+            <value>org.sendyyeah.mdwriter:strike</value>
           </prop>
         </node>
 
         <node oor:name="B_MOD1_MOD2" oor:op="replace">
           <prop oor:name="Command" oor:type="xs:string">
-            <value>service:com.sendyyeah.mdwriter.Dispatch?command=bullet</value>
+            <value>org.sendyyeah.mdwriter:bullet</value>
           </prop>
         </node>
 
         <node oor:name="N_MOD1_MOD2" oor:op="replace">
           <prop oor:name="Command" oor:type="xs:string">
-            <value>service:com.sendyyeah.mdwriter.Dispatch?command=number</value>
+            <value>org.sendyyeah.mdwriter:number</value>
           </prop>
         </node>
 
         <node oor:name="R_MOD1_MOD2" oor:op="replace">
           <prop oor:name="Command" oor:type="xs:string">
-            <value>service:com.sendyyeah.mdwriter.Dispatch?command=hr</value>
+            <value>org.sendyyeah.mdwriter:hr</value>
           </prop>
         </node>
 
         <node oor:name="K_MOD1_MOD2" oor:op="replace">
           <prop oor:name="Command" oor:type="xs:string">
-            <value>service:com.sendyyeah.mdwriter.Dispatch?command=link</value>
+            <value>org.sendyyeah.mdwriter:link</value>
           </prop>
         </node>
 
         <node oor:name="P_MOD1_MOD2" oor:op="replace">
           <prop oor:name="Command" oor:type="xs:string">
-            <value>service:com.sendyyeah.mdwriter.Dispatch?command=preview</value>
+            <value>org.sendyyeah.mdwriter:preview</value>
           </prop>
         </node>
 
         <node oor:name="M_MOD1_MOD2" oor:op="replace">
           <prop oor:name="Command" oor:type="xs:string">
-            <value>service:com.sendyyeah.mdwriter.Dispatch?command=source</value>
+            <value>org.sendyyeah.mdwriter:source</value>
           </prop>
         </node>
 

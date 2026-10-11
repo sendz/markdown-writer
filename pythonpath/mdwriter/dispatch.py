@@ -15,6 +15,7 @@ implemented so the component works when used directly as a protocol handler
 (e.g. from scripts or tests).
 """
 
+import uno
 import unohelper
 
 from com.sun.star.frame import XDispatchProvider, XDispatch, XFrame
@@ -30,23 +31,39 @@ from mdwriter import preview
 IMPLE_NAME = "com.sendyyeah.mdwriter.Dispatch"
 SERVICE_NAMES = ("com.sun.star.frame.ProtocolHandler",)
 
-URL_PREFIX = "service:com.sendyyeah.mdwriter.Dispatch"
-
-
-def _parse_command(url):
-    """Extract the ``command`` parameter from a parsed UNO URL."""
-    return _command_from_string(url.Complete)
+# Custom URL scheme handled by this component (see ProtocolHandler.xcu).
+SCHEME = "org.sendyyeah.mdwriter"
+URL_PREFIX = SCHEME + ":"
+LEGACY_PREFIX = "service:com.sendyyeah.mdwriter.Dispatch"
 
 
 def _command_from_string(text):
-    """Extract ``command=`` from a URL or from a bare argument string."""
+    """Extract the command from any of our URL/argument forms.
+
+    * ``org.sendyyeah.mdwriter:bold``            (protocol-handler scheme)
+    * ``service:...?command=bold``               (legacy add-on form)
+    * ``command=bold``                           (job argument)
+    """
     if "?" in text:
-        text = text.split("?", 1)[1]
-    for part in text.split("&"):
-        key, _, value = part.partition("=")
-        if key == "command":
-            return value
+        query = text.split("?", 1)[1]
+        for part in query.split("&"):
+            key, _, value = part.partition("=")
+            if key in ("command", "cmd") and value:
+                return value
+        return ""
+    if text.startswith(URL_PREFIX):
+        return text[len(URL_PREFIX):]
+    if text.startswith(SCHEME + ":"):
+        return text.split(":", 1)[1]
+    # bare "command=bold"
+    key, _, value = text.partition("=")
+    if key in ("command", "cmd"):
+        return value
     return ""
+
+
+def _parse_command(url):
+    return _command_from_string(url.Complete)
 
 
 class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
@@ -56,6 +73,7 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
         self.ctx = ctx
         self.frame = None
         self.command = ""
+        self._status_listeners = []
 
     # ------------------------------------------------------------------ #
     # XServiceInfo
@@ -83,7 +101,9 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
     # XDispatchProvider
     # ------------------------------------------------------------------ #
     def queryDispatch(self, url, target_frame_name, search_flags):
-        if url.Protocol == "service:" and url.Complete.startswith(URL_PREFIX):
+        complete = url.Complete
+        if url.Protocol == SCHEME or complete.startswith(URL_PREFIX) \
+                or complete.startswith(LEGACY_PREFIX):
             dispatch = Dispatch(self.ctx)
             dispatch.frame = self.frame
             dispatch.command = _parse_command(url)
@@ -101,8 +121,18 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
     # ------------------------------------------------------------------ #
     def dispatch(self, url, args):
         self._execute(self.command or _parse_command(url))
+        self._notify_all(url)
 
     def addStatusListener(self, listener, url):
+        self._status_listeners.append((listener, url))
+        self._notify_status(listener, url)
+
+    def removeStatusListener(self, listener, url):
+        self._status_listeners = [
+            entry for entry in self._status_listeners if entry[0] != listener
+        ]
+
+    def _notify_status(self, listener, url):
         try:
             event = uno.createUnoStruct("com.sun.star.frame.FeatureStateEvent")
             event.Source = self
@@ -110,12 +140,16 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
             event.FeatureDescriptor = ""
             event.IsEnabled = True
             event.Requery = False
+            if _parse_command(url) == "togglelive":
+                # A boolean State turns the menu item into a check box.
+                event.State = bool(live.LIVE_ENABLED)
             listener.statusChanged(event)
-        except Exception:
-            pass
+        except Exception as exc:
+            preview._log("status notify failed: %r" % (exc,))
 
-    def removeStatusListener(self, listener, url):
-        pass
+    def _notify_all(self, url):
+        for listener, reg_url in list(self._status_listeners):
+            self._notify_status(listener, reg_url or url)
 
     # ------------------------------------------------------------------ #
     # XJobExecutor  (this is the path used by the add-on menu/toolbar)
@@ -310,9 +344,3 @@ class Dispatch(unohelper.Base, XServiceInfo, XInitialization,
             model = self._model()
             if formatter.is_writer(model):
                 live.attach(self.ctx, model)
-        live.refresh_indicator(self.ctx)
-        state = "ON" if live.LIVE_ENABLED else "OFF"
-        self._show_info(
-            "Markdown Writer",
-            "Live Markdown auto-formatting is now %s." % state,
-        )

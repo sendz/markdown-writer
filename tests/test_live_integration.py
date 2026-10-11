@@ -44,8 +44,8 @@ def main():
     doc_a = desktop.loadComponentFromURL("private:factory/swriter", "_blank", 0, ())
     time.sleep(0.5)
     url = uno.createUnoStruct("com.sun.star.util.URL")
-    url.Protocol = "service:"
-    url.Complete = "service:com.sendyyeah.mdwriter.Dispatch?command=bold"
+    url.Protocol = "org.sendyyeah.mdwriter"
+    url.Complete = "org.sendyyeah.mdwriter:bold"
     dispatch = desktop.getCurrentFrame().queryDispatch(url, "_self", 0)
     dispatch.dispatch(url, ())
     time.sleep(0.5)

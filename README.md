@@ -101,8 +101,7 @@ Live mode is **on by default**. It attaches itself to every Writer document as
 soon as it is loaded *after* the extension has been activated. To make sure it
 is active, open a document, use any Markdown Writer command once (for example
 **Bold**), then open/create documents as usual. **Markdown ▸ Toggle Live
-Markdown** turns the feature off and on; the status bar shows a *Markdown:
-Live* indicator while it is enabled.
+Markdown** is a check box: ticked means Live is ON.
 
 > **Note on live block conversion.** Converting a line to a *paragraph style*
 > (heading, list, quote, code block) from inside the typing notification

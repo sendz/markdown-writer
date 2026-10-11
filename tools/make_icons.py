@@ -17,7 +17,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 ICON_DIR = os.path.join(ROOT, "icons")
 
-BASE = "service:com.sendyyeah.mdwriter.Dispatch?command=%s"
+BASE = "org.sendyyeah.mdwriter:%s"
 INK = (0x27, 0x2A, 0x33, 0xFF)          # icon colour
 HIGHLIGHT = (0xC0, 0x39, 0x2B, 0xFF)    # accent (unused fallback)
 

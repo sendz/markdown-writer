@@ -19,7 +19,7 @@
 
           <node oor:name="m_bold" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=bold</value>
+              <value>org.sendyyeah.mdwriter:bold</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Bold</value>
@@ -28,7 +28,7 @@
 
           <node oor:name="m_italic" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=italic</value>
+              <value>org.sendyyeah.mdwriter:italic</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Italic</value>
@@ -37,7 +37,7 @@
 
           <node oor:name="m_strike" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=strike</value>
+              <value>org.sendyyeah.mdwriter:strike</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Strikethrough</value>
@@ -46,7 +46,7 @@
 
           <node oor:name="m_code" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=code</value>
+              <value>org.sendyyeah.mdwriter:code</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Inline Code</value>
@@ -61,7 +61,7 @@
 
           <node oor:name="m_h1" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=heading1</value>
+              <value>org.sendyyeah.mdwriter:heading1</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Heading 1</value>
@@ -70,7 +70,7 @@
 
           <node oor:name="m_h2" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=heading2</value>
+              <value>org.sendyyeah.mdwriter:heading2</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Heading 2</value>
@@ -79,7 +79,7 @@
 
           <node oor:name="m_h3" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=heading3</value>
+              <value>org.sendyyeah.mdwriter:heading3</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Heading 3</value>
@@ -88,7 +88,7 @@
 
           <node oor:name="m_h4" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=heading4</value>
+              <value>org.sendyyeah.mdwriter:heading4</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Heading 4</value>
@@ -97,7 +97,7 @@
 
           <node oor:name="m_h5" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=heading5</value>
+              <value>org.sendyyeah.mdwriter:heading5</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Heading 5</value>
@@ -106,7 +106,7 @@
 
           <node oor:name="m_h6" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=heading6</value>
+              <value>org.sendyyeah.mdwriter:heading6</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Heading 6</value>
@@ -115,7 +115,7 @@
 
           <node oor:name="m_body" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=body</value>
+              <value>org.sendyyeah.mdwriter:body</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Body Text</value>
@@ -130,7 +130,7 @@
 
           <node oor:name="m_bullet" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=bullet</value>
+              <value>org.sendyyeah.mdwriter:bullet</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Bullet List</value>
@@ -139,7 +139,7 @@
 
           <node oor:name="m_number" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=number</value>
+              <value>org.sendyyeah.mdwriter:number</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Numbered List</value>
@@ -148,7 +148,7 @@
 
           <node oor:name="m_quote" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=quote</value>
+              <value>org.sendyyeah.mdwriter:quote</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Block Quote</value>
@@ -157,7 +157,7 @@
 
           <node oor:name="m_codeblock" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=codeblock</value>
+              <value>org.sendyyeah.mdwriter:codeblock</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Code Block</value>
@@ -166,7 +166,7 @@
 
           <node oor:name="m_hr" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=hr</value>
+              <value>org.sendyyeah.mdwriter:hr</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Horizontal Rule</value>
@@ -181,7 +181,7 @@
 
           <node oor:name="m_link" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=link</value>
+              <value>org.sendyyeah.mdwriter:link</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Insert Link…</value>
@@ -190,7 +190,7 @@
 
           <node oor:name="m_table" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=table</value>
+              <value>org.sendyyeah.mdwriter:table</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Insert Table</value>
@@ -205,7 +205,7 @@
 
           <node oor:name="m_openmd" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=openmd</value>
+              <value>org.sendyyeah.mdwriter:openmd</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Open Markdown File…</value>
@@ -214,7 +214,7 @@
 
           <node oor:name="m_exportmd" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=exportmd</value>
+              <value>org.sendyyeah.mdwriter:exportmd</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Export as Markdown…</value>
@@ -223,7 +223,7 @@
 
           <node oor:name="m_saveasmd" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=saveasmd</value>
+              <value>org.sendyyeah.mdwriter:saveasmd</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Save as Markdown…</value>
@@ -232,7 +232,7 @@
 
           <node oor:name="m_preview" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=preview</value>
+              <value>org.sendyyeah.mdwriter:preview</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Preview Markdown</value>
@@ -241,7 +241,7 @@
 
           <node oor:name="m_source" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=source</value>
+              <value>org.sendyyeah.mdwriter:source</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Edit Markdown Source…</value>
@@ -256,7 +256,7 @@
 
           <node oor:name="m_live" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=togglelive</value>
+              <value>org.sendyyeah.mdwriter:togglelive</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Toggle Live Markdown</value>
@@ -265,7 +265,7 @@
 
           <node oor:name="m_about" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=about</value>
+              <value>org.sendyyeah.mdwriter:about</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">About Markdown Writer</value>
@@ -287,7 +287,7 @@
 
           <node oor:name="t_bold" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=bold</value>
+              <value>org.sendyyeah.mdwriter:bold</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Bold</value>
@@ -296,7 +296,7 @@
 
           <node oor:name="t_italic" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=italic</value>
+              <value>org.sendyyeah.mdwriter:italic</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Italic</value>
@@ -305,7 +305,7 @@
 
           <node oor:name="t_strike" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=strike</value>
+              <value>org.sendyyeah.mdwriter:strike</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Strikethrough</value>
@@ -314,7 +314,7 @@
 
           <node oor:name="t_code" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=code</value>
+              <value>org.sendyyeah.mdwriter:code</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Inline Code</value>
@@ -323,7 +323,7 @@
 
           <node oor:name="t_h1" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=heading1</value>
+              <value>org.sendyyeah.mdwriter:heading1</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Heading 1</value>
@@ -332,7 +332,7 @@
 
           <node oor:name="t_bullet" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=bullet</value>
+              <value>org.sendyyeah.mdwriter:bullet</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Bullet List</value>
@@ -341,7 +341,7 @@
 
           <node oor:name="t_quote" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=quote</value>
+              <value>org.sendyyeah.mdwriter:quote</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Block Quote</value>
@@ -350,7 +350,7 @@
 
           <node oor:name="t_link" oor:op="replace">
             <prop oor:name="URL" oor:type="xs:string">
-              <value>service:com.sendyyeah.mdwriter.Dispatch?command=link</value>
+              <value>org.sendyyeah.mdwriter:link</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value xml:lang="en-US">Insert Link</value>

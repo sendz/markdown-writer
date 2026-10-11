@@ -29,6 +29,9 @@ trap cleanup EXIT
 
 echo
 echo "### starting headless LibreOffice (socket port $PORT) ###"
+# Enable live block conversion so the integration tests exercise it (it is off
+# by default because of the LibreOffice GTK3 crash).
+export MARKDOWN_WRITER_LIVE_BLOCKS=1
 soffice --headless --norestore --nologo --nofirststartwizard \
     --accept="socket,host=localhost,port=${PORT};urp;" >"$LOG" 2>&1 &
 SOFFICE_PID=$!
